@@ -1,0 +1,226 @@
+/* ═══════════════════════════════════════════════════════
+   Navbar — Full bar at top, floating island on scroll
+   ═══════════════════════════════════════════════════════ */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.navbar__inner,
+.navbar__pill {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100%;
+  color: #1a1a1a;
+}
+
+/* ───── Full-width bar ───── */
+
+.navbar--full {
+  height: 56px;
+}
+
+.navbar--full .navbar__inner {
+  padding: 0 3rem;
+  background: hsla(0, 0%, 100%, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transition: background-color 0.2s ease;
+}
+
+/* ───── Floating island ───── */
+
+.navbar--island {
+  top: 16px;
+  height: 48px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.navbar__pill {
+  width: max-content;
+  min-width: 420px;
+  max-width: 90vw;
+  padding: 0 3rem;
+  background: hsla(0, 0%, 100%, 0.1);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  border-radius: 999px;
+  pointer-events: auto;
+  transition: background-color 0.2s ease;
+}
+
+.navbar--island .navbar__logo img {
+  height: 26px;
+}
+
+.navbar--island .navbar__hamburger-line {
+  width: 18px;
+}
+
+.navbar--island .navbar__cta {
+  font-size: 0.8rem;
+}
+
+/* ───── Hamburger ───── */
+
+.navbar__hamburger {
+  justify-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.navbar__hamburger-line {
+  display: block;
+  width: 22px;
+  height: 1.5px;
+  background-color: #ffffff;
+  border-radius: 1px;
+  transition: background-color 0.35s ease;
+}
+
+.navbar__hamburger:hover .navbar__hamburger-line {
+  background-color: #555;
+}
+
+/* ───── Logo ───── */
+
+.navbar__logo {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.navbar__logo img {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+/* ───── CTA ───── */
+
+.navbar__cta {
+  justify-self: end;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: color 0.35s ease;
+}
+
+.navbar__cta:hover {
+  color: #1a1a1a;
+}
+
+/* ───── Logo cross-fade (light ↔ dark) ───── */
+
+.navbar__logo-light,
+.navbar__logo-dark {
+  transition: opacity 0.35s ease;
+}
+
+.navbar__logo-dark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ───── On-light mode (pill over white sections) ───── */
+
+.navbar--on-light .navbar__pill {
+  background: hsla(0, 0%, 47%, 0.1);
+}
+
+.navbar--on-light .navbar__hamburger-line {
+  background-color: #1a1a1a;
+}
+
+.navbar--on-light .navbar__cta {
+  color: #1a1a1a;
+}
+
+.navbar--on-light .navbar__logo-light {
+  opacity: 0;
+}
+
+.navbar--on-light .navbar__logo-dark {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ───── Tablet ───── */
+
+@media (max-width: 1024px) {
+  .navbar--full .navbar__inner {
+    padding: 0 2rem;
+  }
+
+  .navbar__pill {
+    min-width: 380px;
+    padding: 0 2rem;
+  }
+}
+
+/* ───── Mobile ───── */
+
+@media (max-width: 768px) {
+  .navbar--full .navbar__inner {
+    padding: 0 1.5rem;
+  }
+
+  .navbar__pill {
+    min-width: 320px;
+    padding: 0 1.5rem;
+  }
+
+  .navbar__logo img {
+    height: 28px;
+  }
+
+  .navbar__cta {
+    font-size: 0.8rem;
+  }
+}
+
+/* ───── Small phone ───── */
+
+@media (max-width: 480px) {
+  .navbar--full .navbar__inner {
+    padding: 0 1rem;
+  }
+
+  .navbar__pill {
+    min-width: 0;
+    width: calc(100vw - 2rem);
+    padding: 0 1rem;
+  }
+
+  .navbar__logo img {
+    height: 24px;
+  }
+
+  .navbar__cta {
+    font-size: 0.75rem;
+  }
+
+  .navbar--island {
+    top: 12px;
+  }
+}

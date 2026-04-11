@@ -1,0 +1,1100 @@
+/* ═══════════════════════════════════════════════════════
+   About Us Page Styles — matches Figma design
+   ═══════════════════════════════════════════════════════ */
+
+.about-page {
+  /* Figma grid: 12 cols, 80px margin, 24px gutter, stretch on 1440px frame */
+  --grid-margin: 80px;
+  --grid-gutter: 24px;
+  --page-gutter: var(--grid-margin);
+  --col-w: calc((100vw - 2 * var(--grid-margin) - 11 * var(--grid-gutter)) / 12);
+  --grid-unit: calc(var(--col-w) + var(--grid-gutter));
+  width: 100%;
+  overflow-x: hidden;
+  background-color: #ffffff;
+}
+
+/* ── Hero Section ── */
+/*
+ * Figma: 1440×865
+ *   Title container: 514×110, centered, top: 217px
+ *   Image: top: 464px, extends 153px into intro section (total 554px)
+ *   Title sits in cols 4–9 (54px into col4 → 56px before col9 end)
+ */
+.about-hero {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: visible;
+  z-index: 1;
+  background-color: #ffffff;
+}
+
+.about-hero__title {
+  position: absolute;
+  top: 25.09%; /* 217/865 */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 514px;
+  max-width: calc(100% - 2 * var(--grid-margin));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.25; /* 55px × 2 lines = 110px container height */
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.about-hero__image-wrapper {
+  position: absolute;
+  top: 53.64%; /* 464/865 */
+  left: 0;
+  right: 0;
+  /* 401px in hero + 153px into intro = 554px → 64.05% of 865 */
+  height: 64.05%;
+  overflow: hidden;
+}
+
+.about-hero__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Intro Section ── */
+/*
+ * Figma: 1440×865
+ *   Left heading: cols 1-4, 371×106, top 321px (37.1%)
+ *   Right body:   cols 7-12, 617×310, top 321px, 83px from right
+ */
+.about-intro {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  padding: 0 var(--grid-margin);
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  background-color: #ffffff;
+}
+
+/* Left heading — cols 1-4 */
+.about-intro__heading {
+  position: absolute;
+  top: 37.1%; /* 321/865 */
+  left: var(--grid-margin);
+  width: calc(4 * var(--col-w) + 3 * var(--grid-gutter));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1;
+  letter-spacing: 0%;
+}
+
+/* Right body — cols 7-12 */
+.about-intro__body {
+  position: absolute;
+  top: 37.1%; /* 321/865 */
+  left: calc(var(--grid-margin) + 6 * var(--grid-unit));
+  right: var(--grid-margin);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.about-intro__text {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: #111;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.about-intro__text--muted {
+  color: #555;
+}
+
+/* ── Journey Section ── */
+/*
+ * Figma: 1440×865, 12-col grid, 80px margin, 24px gutter
+ * Col width = (1440-160-264)/12 ≈ 84.67px  |  grid-unit = col + gutter ≈ 108.67px
+ *
+ * Layout (px at 1440×865):
+ *   "Our Journey"  → cols 1-3, top: 106px (12.25%)
+ *   Year labels     → top: 487px (56.3%)
+ *   "2003"          → col 2 center
+ *   "2006" (large)  → centered on col 4, above the line
+ *   "2008-Today"    → cols 7-12 centers
+ *   Description     → below line, col 3 mid → col 6 end
+ */
+.about-journey {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #c4c4c4;
+  overflow: hidden;
+}
+
+/* — Header: top-left, cols 1-3, 106px from top — */
+.journey-header {
+  position: absolute;
+  top: 12.25%; /* 106/865 */
+  left: var(--grid-margin);
+}
+
+.journey-header__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.journey-header__desc {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1.5;
+  /* 3 cols + 2 gutters */
+  max-width: calc(3 * var(--col-w) + 2 * var(--grid-gutter));
+}
+
+.journey-header__desc strong {
+  font-weight: 700;
+}
+
+/* — Content group anchored so labels sit at 56.3% from top — */
+.journey-content {
+  position: absolute;
+  top: 56.3%; /* 487/865 — labels baseline */
+  left: 0;
+  right: 0;
+}
+
+/* — Timeline container — */
+.journey-timeline {
+  position: relative;
+  width: 100%;
+  height: 42px; /* label-area(24) + gap(8) + line-area(10) */
+  overflow: visible;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Labels — sit ABOVE the line, slide to grid columns
+   ══════════════════════════════════════════════════════════ */
+.journey-timeline__label {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.5;
+  transform-origin: center bottom;
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+              font-size 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s ease;
+}
+
+/* Active label: pops up large */
+.journey-timeline__label--active {
+  font-size: 94px;
+  transform: translateX(-50%) translateY(-76px);
+  opacity: 1;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Line — fixed full-width
+   ══════════════════════════════════════════════════════════ */
+.journey-timeline__line {
+  position: absolute;
+  top: 35px; /* label(24) + 11px gap = 35px */
+  left: -50%;
+  width: 200%;
+  height: 1px;
+  background-color: #1a1a1a;
+  pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Dots — sit ON the line, slide independently, follow labels
+   ══════════════════════════════════════════════════════════ */
+.journey-timeline__dot {
+  position: absolute;
+  top: 32px; /* centered on the 1px line at 35px: 35 - 3 = 32 */
+  width: 6px;
+  height: 6px;
+  background-color: #1a1a1a;
+  border-radius: 50%;
+  z-index: 2;
+  cursor: pointer;
+  transform: translateX(-50%);
+  transition: left 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.3s ease;
+}
+
+.journey-timeline__dot:hover {
+  transform: translateX(-50%) scale(2.2);
+}
+
+.journey-timeline__dot--active {
+  transform: translateX(-50%) scale(1.6);
+}
+
+/* ══════════════════════════════════════════════════════════
+   Description — fixed at col 4 area, directional exit/enter
+   --desc-dir: 1 = forward (clicking later year), -1 = backward
+   ══════════════════════════════════════════════════════════ */
+.journey-featured__desc {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1.5;
+  margin-top: 50px;
+  padding-left: calc(var(--grid-margin) + 2 * var(--grid-unit) + var(--col-w) / 2);
+  width: calc(var(--grid-margin) + 5 * var(--grid-unit) + var(--col-w));
+}
+
+/* Old description slides OUT in the direction of motion */
+.journey-featured__desc--exiting {
+  animation: descExit 0.3s ease forwards;
+}
+
+/* New description slides IN from the opposite side */
+.journey-featured__desc--entering {
+  animation: descEnter 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes descExit {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    /* Exits opposite to motion direction: forward click → text exits left */
+    transform: translateX(calc(-40px * var(--desc-dir, 1)));
+  }
+}
+
+@keyframes descEnter {
+  from {
+    opacity: 0;
+    /* Enters from the motion direction: forward click → text enters from right */
+    transform: translateX(calc(50px * var(--desc-dir, 1)));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── People of Honour Section ── */
+/*
+ * Figma: 1440×865
+ *   Left heading:  313×106, 95 from left, 433 from top → ~cols 1-3
+ *   Right subtitle: 604×64, 746 from left, 433 from top → ~cols 7-12
+ */
+.about-honour {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.about-honour__title {
+  position: absolute;
+  top: 50.06%; /* 433/865 */
+  left: var(--grid-margin);
+  width: calc(3 * var(--col-w) + 2 * var(--grid-gutter));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1;
+  letter-spacing: 0%;
+}
+
+.about-honour__subtitle {
+  position: absolute;
+  top: 50.06%; /* 433/865 */
+  left: calc(var(--grid-margin) + 6 * var(--grid-unit));
+  right: var(--grid-margin);
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #111;
+  line-height: 1;
+  letter-spacing: 0%;
+}
+
+/* ── Team Photos Section ── */
+/*
+ * Figma: 1440×865
+ *   4 images (300×400) at cols 1, 4, 7, 10 — each spans 3 cols
+ *   Top: 233px (26.9%), name labels ~23px below images
+ */
+.about-team {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.team-grid {
+  position: absolute;
+  top: 26.9%; /* 233/865 */
+  left: var(--grid-margin);
+  right: var(--grid-margin);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--grid-gutter);
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.team-card__img {
+  width: 100%;
+  aspect-ratio: 300 / 400;
+  border-radius: 20px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.team-card__img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-card__name {
+  margin-top: 20px;
+  padding-left: 14px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #111;
+  line-height: 16px;
+  letter-spacing: 0%;
+}
+
+.team-card__name {
+  text-align: center;
+}
+
+.team-card__subtitle {
+  color: #909294;
+}
+
+/* ── Why Sparrow Section ── */
+/*
+ * Figma: 1440×865
+ *   "Why Sparrow?" label: col 1, top 173px (20%)
+ *   First accordion title: top 172px (19.9%), cols 7-12
+ *   Last divider line: 171.94px from bottom (19.9%)
+ */
+.about-why {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #c4c4c4;
+  overflow: hidden;
+}
+
+.why-label {
+  position: absolute;
+  top: 20%; /* 173/865 */
+  left: var(--grid-margin);
+}
+
+.why-label span {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #191b1d;
+  line-height: 1;
+}
+
+.why-accordion {
+  position: absolute;
+  top: 19.9%; /* 172/865 — first title starts here */
+  bottom: 19.9%; /* 171.94/865 — last divider ends here */
+  left: calc(var(--grid-margin) + 6 * var(--grid-unit));
+  right: var(--grid-margin);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.why-accordion__item {
+  cursor: pointer;
+}
+
+.why-accordion__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.why-accordion__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1;
+}
+
+.why-accordion__arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, transform 0.3s ease;
+}
+
+.why-accordion__arrow:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.why-accordion__item--active .why-accordion__arrow {
+  transform: rotate(90deg);
+}
+
+.why-accordion__item--active .why-accordion__arrow:hover {
+  transform: rotate(90deg);
+}
+
+.why-accordion__content {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1.5;
+  max-width: 434px;
+  padding-bottom: 16px;
+}
+
+.why-accordion__divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ── Marquee Text Section ── */
+.about-marquee {
+  padding: 80px 0;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+.about-marquee__text {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(80px, 14vw, 200px);
+  font-weight: 500;
+  color: #ccc;
+  opacity: 0.2;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* ── Approach Section ── */
+/*
+ * Figma: 1440×865
+ *   Title: cols 1-5, top 207px (23.93%)
+ *   Card:  cols 1-12, top 303px (35.03%), bottom 80px (9.25%)
+ *   Heading (in card): cols 7-9, 141px from card top
+ *   Text (in card):    cols 7-11, 205px from card top
+ *   Number (in card):  left 93px, 63px from card top, "0" half-clipped
+ */
+.about-approach {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background-color: #ffffff;
+}
+
+.approach-header__title {
+  position: absolute;
+  top: 23.93%; /* 207/865 */
+  left: var(--grid-margin);
+  width: calc(5 * var(--col-w) + 4 * var(--grid-gutter));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #191b1d;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+/* Card stack — NO overflow hidden so cards can fly in from below */
+.approach-card-stack {
+  position: absolute;
+  top: 35.03%; /* 303/865 */
+  bottom: 9.25%; /* 80/865 */
+  left: var(--grid-margin);
+  right: var(--grid-margin);
+}
+
+/* First card is relative (sets container height).
+   Cards 2-4 are absolute (overlay from above via z-index). */
+.approach-card {
+  position: relative;
+  background-color: #e8e8e8;
+  border-radius: 24px;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.08);
+}
+
+.approach-card:not(:first-child) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+.approach-card__heading {
+  position: absolute;
+  /* 141px from card top: (444-303)/(865-303-80) = 29.25% */
+  top: 29.25%;
+  /* cols 7-9 within the card (card starts at grid margin) */
+  left: calc(6 * var(--grid-unit));
+  width: calc(3 * var(--col-w) + 2 * var(--grid-gutter));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #121317;
+  line-height: 1;
+  letter-spacing: 0%;
+}
+
+.approach-card__text {
+  position: absolute;
+  /* 205px from card top: (508-303)/(865-303-80) = 42.53% */
+  top: 42.53%;
+  /* cols 7-11 within the card */
+  left: calc(6 * var(--grid-unit));
+  width: calc(5 * var(--col-w) + 4 * var(--grid-gutter));
+  font-family: "Inter", "Neue Montreal", Arial, sans-serif;
+  font-size: 27px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1;
+  letter-spacing: 0%;
+}
+
+.approach-card__number {
+  position: absolute;
+  top: 13.07%;
+  /* Negative left so "0" is half-clipped by the card boundary */
+  left: -120px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 398px;
+  font-weight: 500;
+  color: #c4c4c4;
+  line-height: 1;
+  pointer-events: none;
+}
+
+
+/* ── Beliefs Section ── */
+/* Figma: 1440×865
+ *   Title: cols 1-4, 409×53, top 110px (12.72%), bottom 702px
+ *   List:  cols 7-12, scrollable vertically
+ */
+.about-beliefs {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.beliefs-title {
+  position: absolute;
+  top: 12.72%; /* 110/865 */
+  left: var(--grid-margin);
+  width: calc(4 * var(--col-w) + 3 * var(--grid-gutter));
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #111;
+  line-height: 1;
+}
+
+.beliefs-list {
+  position: absolute;
+  top: 12.72%; /* align with title */
+  bottom: 12.72%; /* mirror spacing */
+  left: calc(var(--grid-margin) + 6 * var(--grid-unit));
+  right: var(--grid-margin);
+  overflow: hidden;
+  overscroll-behavior: contain;
+}
+
+.beliefs-list__inner {
+  position: relative;
+}
+
+.belief-item {
+  padding: 32px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.belief-item:first-child {
+  padding-top: 0;
+}
+
+.belief-item__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.belief-item__text {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #121317;
+  line-height: 1.6;
+}
+
+/* ── Banner Image Section ── */
+/*
+ * Figma: 1440×865
+ *   Image: cols 2-11
+ *   Text "AMAZE . DELIGHT . REPEAT" below image
+ */
+.about-banner {
+  position: relative;
+  height: 100vh;
+  height: 100dvh;
+  background-color: #c4c4c4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.banner-image-wrapper {
+  /* cols 2-11: starts at margin + 1 grid-unit, ends at margin + 1 grid-unit from right */
+  margin-left: calc(var(--grid-margin) + var(--grid-unit));
+  margin-right: calc(var(--grid-margin) + var(--grid-unit));
+  width: calc(100% - 2 * (var(--grid-margin) + var(--grid-unit)));
+  overflow: hidden;
+}
+
+.banner-image-wrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.banner-text {
+  margin-top: 24px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(32px, 5vw, 64px);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .about-hero {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 80px;
+    overflow: hidden;
+    z-index: auto;
+  }
+
+  .about-hero__title {
+    position: static;
+    transform: none;
+    width: auto;
+    max-width: none;
+    font-size: clamp(28px, 5vw, 44px);
+    margin: 40px 20px 40px;
+  }
+
+  .about-hero__image-wrapper {
+    position: static;
+    width: 100%;
+    height: auto;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .about-intro {
+    z-index: auto;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    flex-direction: column;
+    padding: 80px 24px;
+    gap: 40px;
+  }
+
+  .about-intro__heading {
+    position: static;
+    width: 100%;
+    font-size: clamp(28px, 5vw, 44px);
+  }
+
+  .about-intro__body {
+    position: static;
+    width: 100%;
+  }
+
+  .about-intro__text {
+    font-size: 20px;
+  }
+
+  .about-journey {
+    position: static;
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    padding: 80px 0 60px;
+    gap: 60px;
+  }
+
+  .journey-header {
+    position: static;
+    padding: 0 24px;
+  }
+
+  .journey-header__desc {
+    max-width: none;
+  }
+
+  .journey-content {
+    position: static;
+  }
+
+  .journey-featured__year {
+    position: static;
+    transform: none;
+    font-size: 64px;
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+
+  .journey-featured__desc {
+    padding-left: 24px;
+    margin-top: 24px;
+    max-width: none;
+    width: auto;
+  }
+
+  .journey-timeline__label {
+    font-size: 16px;
+  }
+
+  .about-honour {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 24px;
+    gap: 32px;
+  }
+
+  .about-honour__title {
+    position: static;
+    width: 100%;
+    font-size: clamp(28px, 5vw, 44px);
+  }
+
+  .about-honour__subtitle {
+    position: static;
+    width: 100%;
+    font-size: 20px;
+  }
+
+  .about-team {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    padding: 80px 0;
+  }
+
+  .team-grid {
+    position: static;
+    grid-template-columns: repeat(2, 1fr);
+    padding: 0 24px;
+    gap: 24px;
+  }
+
+  .about-why {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 80px 24px;
+  }
+
+  .why-label {
+    position: static;
+    width: 100%;
+  }
+
+  .why-accordion {
+    position: static;
+    width: 100%;
+  }
+
+  .why-accordion__title {
+    font-size: clamp(24px, 4vw, 44px);
+  }
+
+  .about-approach {
+    padding: 80px 24px;
+  }
+
+  .approach-header__title {
+    position: static;
+    width: 100%;
+    margin-bottom: 32px;
+  }
+
+  .approach-card-stack {
+    position: static;
+  }
+
+  .approach-card {
+    height: auto;
+    min-height: 360px;
+    padding: 60px 40px;
+  }
+
+  .approach-card__heading {
+    position: static;
+    width: 100%;
+    font-size: clamp(22px, 4vw, 27px);
+    margin-bottom: 24px;
+  }
+
+  .approach-card__text {
+    position: static;
+    width: 100%;
+    font-size: 20px;
+    line-height: 1.45;
+  }
+
+  .approach-card__number {
+    font-size: 100px;
+    top: auto;
+    bottom: 0;
+    left: 10px;
+  }
+
+  .about-beliefs {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding: 80px 24px;
+  }
+
+  .beliefs-title {
+    position: static;
+    width: 100%;
+  }
+
+  .beliefs-list {
+    position: static;
+    overflow: visible;
+  }
+
+  .about-banner {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 40px 24px;
+  }
+
+  .banner-image-wrapper {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .journey-header__title {
+    font-size: 32px;
+  }
+
+  .journey-featured__year {
+    font-size: 48px;
+    padding-left: 16px;
+    margin-bottom: 12px;
+  }
+
+  .journey-featured__desc {
+    padding-left: 16px;
+    margin-top: 20px;
+  }
+
+  .journey-timeline__label {
+    font-size: 14px;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .team-card__img {
+    border-radius: 12px;
+  }
+
+  .why-accordion__title {
+    font-size: 24px;
+  }
+
+  .why-accordion__arrow {
+    width: 32px;
+    height: 32px;
+  }
+
+  .why-accordion__arrow svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .approach-card__heading {
+    font-size: 28px;
+  }
+
+  .approach-card__text {
+    font-size: 18px;
+  }
+
+  .approach-card__number {
+    font-size: 80px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Small mobile (≤480px)
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .about-page {
+    --grid-margin: 16px;
+  }
+
+  .about-hero {
+    padding-top: 60px;
+  }
+
+  .about-hero__title {
+    font-size: 24px;
+    margin: 24px 16px 24px;
+  }
+
+  .about-intro,
+  .about-honour,
+  .about-why,
+  .about-approach,
+  .about-beliefs {
+    padding: 60px 16px;
+  }
+
+  .about-intro__heading,
+  .about-honour__title,
+  .approach-header__title,
+  .beliefs-title {
+    font-size: 24px;
+  }
+
+  .about-intro__text {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .about-honour__subtitle {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  .approach-card {
+    padding: 40px 24px;
+    min-height: 320px;
+  }
+
+  .approach-card__heading {
+    font-size: 22px;
+  }
+
+  .approach-card__text {
+    font-size: 16px;
+  }
+
+  .approach-card__number {
+    font-size: 64px;
+  }
+
+  .about-banner {
+    padding: 24px 16px;
+  }
+
+  .banner-text {
+    font-size: 22px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .about-marquee {
+    padding: 40px 0;
+  }
+
+  .about-marquee__text {
+    font-size: 56px;
+  }
+}

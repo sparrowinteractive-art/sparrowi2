@@ -1,0 +1,322 @@
+/* ═══════════════════════════════════════════════════════
+   Footer — single 1300px section
+   White background, gradient blob, overlay at bottom
+   ═══════════════════════════════════════════════════════ */
+
+.footer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background-color: #ffffff;
+  overflow-x: clip;
+}
+
+/* ── Hero — sticky so the overlay scrolls over it ── */
+.footer__hero {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 var(--page-gutter);
+  height: 1100px;
+}
+
+/* ── Gradient blob ── */
+.footer__blob {
+  position: absolute;
+  top: 200px;
+  right: -50px;
+  transform: scale(1.75) translateY(40%);
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    #B400FF 11%,
+    #F9288C 38%,
+    #F29578 86%
+  );
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+/* ── Hero text ── */
+.footer__hero-text {
+  position: relative;
+  z-index: 1;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 90px;
+  font-weight: 500;
+  color: rgba(99, 99, 99, 0.25);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+  mix-blend-mode: luminosity;
+  top: -250px;
+}
+
+/* ── Content overlay — scrolls up over the sticky hero ── */
+.footer__overlay {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background: #c4c4c465;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 50px var(--page-gutter);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 400px;
+  margin-top: 200px;
+}
+
+/* ── Layout grid ── */
+.footer__layout {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 60px;
+}
+
+.footer__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 40%;
+  flex-shrink: 0;
+}
+
+.footer__nav-link {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  line-height: 1.5;
+  transition: color 0.25s ease;
+}
+
+.footer__nav-link:hover {
+  color: #ffffff;
+}
+
+.footer__right {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 60%;
+}
+
+.footer__info {
+  display: flex;
+  gap: 60px;
+}
+
+.footer__info-heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.65rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.footer__contact p,
+.footer__social-link {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.6;
+}
+
+.footer__social-link {
+  display: block;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.footer__social-link:hover {
+  color: #ffffff;
+}
+
+.footer__newsletter-form {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.footer__input {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 8px 0;
+  outline: none;
+  width: 200px;
+}
+
+.footer__input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer__subscribe-btn {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 30px;
+  padding: 7px 18px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.footer__subscribe-btn:hover {
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+/* ── Footer bottom ── */
+.footer__bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.footer__logo-large {
+  height: clamp(3rem, 7vw, 5rem);
+  width: auto;
+  object-fit: contain;
+}
+
+.footer__copyright {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.6rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: right;
+  line-height: 1.5;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 1024px) {
+  .footer__hero {
+    padding: 60px 40px;
+  }
+
+  .footer__blob {
+    width: 450px;
+    height: 450px;
+    right: -100px;
+  }
+
+  .footer__hero-text {
+    font-size: 60px;
+  }
+
+  .footer__overlay {
+    padding: 40px 40px 30px;
+    min-height: 420px;
+  }
+
+  .footer__info {
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .footer__hero {
+    padding: 50px 24px;
+    height: 60vh;
+  }
+
+  .footer__blob {
+    width: 350px;
+    height: 350px;
+    right: -80px;
+  }
+
+  .footer__hero-text {
+    font-size: 44px;
+  }
+
+  .footer__overlay {
+    padding: 40px 24px 30px;
+    min-height: auto;
+  }
+
+  .footer__layout {
+    flex-direction: column;
+    gap: 30px;
+  }
+
+  .footer__nav {
+    width: 100%;
+  }
+
+  .footer__right {
+    width: 100%;
+  }
+
+  .footer__info {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .footer__logo-large {
+    height: 3rem;
+  }
+
+  .footer__bottom {
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .footer__copyright {
+    text-align: left;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer__hero {
+    padding: 40px 16px;
+  }
+
+  .footer__blob {
+    width: 280px;
+    height: 280px;
+  }
+
+  .footer__hero-text {
+    font-size: 36px;
+  }
+
+  .footer__overlay {
+    padding: 30px 16px 24px;
+  }
+
+  .footer__nav-link {
+    font-size: 1.2rem;
+  }
+
+  .footer__input {
+    width: 100%;
+  }
+
+  .footer__newsletter-form {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+}

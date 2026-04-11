@@ -1,0 +1,1991 @@
+/* ═══════════════════════════════════════════════════════
+   HomePage — All Sections
+   ═══════════════════════════════════════════════════════ */
+
+.homepage {
+  --page-gutter: max(80px, calc((100vw - 1400px) / 2));
+  width: 100%;
+  /* clip (not hidden) so sticky positioning works for descendants */
+  overflow-x: clip;
+}
+
+/* ── Preloader ── */
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+  overflow: hidden;
+}
+
+.preloader--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Gradient blobs — three layered radial gradients, regi.it-inspired */
+.preloader__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  will-change: transform;
+  transform: scale(0.4);
+}
+
+/* Blob 1 — purple / magenta */
+.preloader__blob--1 {
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, rgba(180, 0, 255, 0.6) 0%, transparent 70%);
+  animation: preloaderBlob1 4s ease-in-out infinite, preloaderExpand 1.5s ease-out forwards;
+}
+
+/* Blob 2 — pink / coral */
+.preloader__blob--2 {
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(249, 40, 140, 0.5) 0%, transparent 70%);
+  animation: preloaderBlob2 5s ease-in-out infinite, preloaderExpand 1.8s ease-out 0.2s forwards;
+}
+
+/* Blob 3 — warm orange */
+.preloader__blob--3 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(242, 149, 120, 0.55) 0%, transparent 70%);
+  animation: preloaderBlob3 3.5s ease-in-out infinite, preloaderExpand 1.6s ease-out 0.4s forwards;
+}
+
+/* Initial expand — blobs start compressed and bloom outward */
+@keyframes preloaderExpand {
+  to { transform: scale(1); }
+}
+
+/* Blob 1 — wide sweeping orbit */
+@keyframes preloaderBlob1 {
+  0%   { translate: 0 0;         border-radius: 50%; }
+  20%  { translate: 150px -100px; border-radius: 38% 62% 55% 45%; }
+  40%  { translate: -80px -120px; border-radius: 55% 45% 38% 62%; }
+  60%  { translate: -140px 80px;  border-radius: 42% 58% 62% 38%; }
+  80%  { translate: 100px 110px;  border-radius: 60% 40% 45% 55%; }
+  100% { translate: 0 0;         border-radius: 50%; }
+}
+
+/* Blob 2 — counter-motion, different rhythm */
+@keyframes preloaderBlob2 {
+  0%   { translate: 0 0;          border-radius: 50%; }
+  25%  { translate: -120px 100px;  border-radius: 45% 55% 60% 40%; }
+  50%  { translate: 100px 60px;    border-radius: 58% 42% 40% 60%; }
+  75%  { translate: 60px -130px;   border-radius: 40% 60% 55% 45%; }
+  100% { translate: 0 0;          border-radius: 50%; }
+}
+
+/* Blob 3 — tight, fast orbit */
+@keyframes preloaderBlob3 {
+  0%   { translate: 0 0;         border-radius: 50%; }
+  30%  { translate: 90px 80px;   border-radius: 55% 45% 50% 50%; }
+  60%  { translate: -110px -70px; border-radius: 42% 58% 55% 45%; }
+  100% { translate: 0 0;         border-radius: 50%; }
+}
+
+/* Logo wrapper — positions logo + aura as a unit */
+.preloader__logo-wrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Gradient aura — glows behind the logo, pulses with the blobs */
+.preloader__aura {
+  position: absolute;
+  width: 480px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(180, 0, 255, 0.35) 0%,
+    rgba(249, 40, 140, 0.25) 40%,
+    rgba(242, 149, 120, 0.15) 70%,
+    transparent 100%
+  );
+  filter: blur(40px);
+  animation: preloaderAura 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes preloaderAura {
+  0%   { transform: scale(1);   opacity: 0.7; }
+  50%  { transform: scale(1.3); opacity: 1; }
+  100% { transform: scale(1);   opacity: 0.7; }
+}
+
+/* Logo image */
+.preloader__logo {
+  position: relative;
+  z-index: 1;
+  width: 340px;
+  height: auto;
+  opacity: 0;
+  filter: blur(20px);
+  transform: scale(0.85);
+  animation: preloaderLogoIn 2.5s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards;
+}
+
+@keyframes preloaderLogoIn {
+  0%   { opacity: 0;   filter: blur(20px); transform: scale(0.85); }
+  50%  { opacity: 0.9; filter: blur(4px);  transform: scale(0.95); }
+  100% { opacity: 1;   filter: blur(0px);  transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Custom "View" Cursor — Showcase Sections
+   ═══════════════════════════════════════════════════════ */
+
+/* Hidden by default — only shown on hover-capable devices */
+.showcase-cursor {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .showcase-cursor {
+    position: fixed;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(99, 99, 99, 0.4);
+    backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Neue Montreal", "Inter", Arial, Helvetica, sans-serif;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 19px;
+    color: #ffffff;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    will-change: transform, opacity, left, top;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  .showcase-cursor--visible {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+
+  .showcase,
+  .showcase * {
+    cursor: none;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section 1: Hero (fixed behind everything)
+   ═══════════════════════════════════════════════════════ */
+
+.section {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.section--hero {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 0;
+  background-color: #000000;
+  overflow: hidden;
+}
+
+/* Image layer */
+.hero-hardware {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.hero__bg {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Gradient overlay — Apple-style scrim + blur, revealed on scroll */
+.hero-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 45%;
+  background-image: linear-gradient(0deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%);
+  backdrop-filter: blur(21.5px);
+  -webkit-backdrop-filter: blur(21.5px);
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  clip-path: inset(100% 0 0 0);
+  will-change: clip-path, opacity;
+}
+
+/* Pushes scrollable content below the fixed hero */
+.hero-spacer {
+  height: 100vh;
+}
+
+.section__inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  will-change: transform, opacity;
+}
+
+.hero__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(1.8rem, 5.5vw, 4.5rem);
+  font-weight: 500;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  text-align: center;
+  margin: 0;
+  /* Initial state — JS toggles .hero-text--in to play the entrance.
+     Re-runs on every page visit (see hero entrance useEffect). */
+  opacity: 0;
+  transform: translateY(80px);
+  transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s,
+              transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.2s;
+  will-change: transform, opacity;
+}
+
+.hero__title em {
+  font-style: italic;
+  font-weight: 300;
+}
+
+.hero__description {
+  font-family: "Neue Montreal", Arial, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 32px;
+  letter-spacing: 0;
+  text-align: center;
+  color: #ffffff;
+  max-width: clamp(260px, 48vw, 520px);
+  margin: 0;
+  padding: 0;
+  /* Initial state — JS toggles .hero-text--in to play the entrance */
+  opacity: 0;
+  transform: translateY(60px);
+  transition: opacity 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.5s,
+              transform 1.4s cubic-bezier(0.22, 1, 0.36, 1) 0.5s;
+  will-change: transform, opacity;
+}
+
+/* Entrance state — applied by JS on mount + on every page visit */
+.hero__title.hero-text--in,
+.hero__description.hero-text--in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Section 2: Partner ── */
+
+.partner-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.section--partner {
+  position: absolute;
+  inset: 0;
+  background: rgba(217, 217, 217, 0.2);
+  backdrop-filter: blur(21.5px) saturate(150%);
+  filter: blur(21.5px) saturate(150%);
+  transform: scale(1.5);
+}
+
+.partner-content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  padding: 0px;
+}
+
+.partner__text {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 44px;
+  line-height: 55px;
+  text-align: center;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  width: 908px;
+  max-width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.partner__highlight {
+  background: linear-gradient(90deg, #FF01BB 24.04%, #0169E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Partner statement fade-in on scroll */
+.partner__text {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.partner__text.partner-blur--active {
+  animation: partnerFadeIn 1.2s ease forwards;
+}
+
+@keyframes partnerFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Section 3: Touch of More ── */
+
+.section--touch {
+  position: relative;
+  z-index: 2;
+  background-color: #ffffff;
+  overflow: hidden;
+}
+
+.touch__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 400;
+  color: #1a1a1a;
+  text-align: center;
+  line-height: 55px;
+  letter-spacing: -0.01em;
+  margin-top: -10vh;
+}
+
+.touch__accent {
+  display: inline-block;
+  padding-right: 0.15em;
+  /* Gradient lives on the children below — each child shows its slice of
+     the unified gradient using JS-measured background-size/position. */
+}
+
+/* Blur-to-sharp word reveal — words default hidden (blurred + transparent)
+   so the title does not exist before the user scrolls to the section.
+   The IntersectionObserver adds .blur-reveal--active on enter to play the
+   fade-in, and removes it on exit so the next entry restarts cleanly. */
+.blur-word {
+  display: inline-block;
+  filter: blur(8px);
+  opacity: 0;
+  will-change: filter, opacity;
+}
+
+/* Each "Touch of More" word renders its OWN slice of the unified gradient.
+   --phrase-w and --word-offset are written by JS (see touch slicing effect):
+     --phrase-w  → full phrase width (so gradient is sized to the whole phrase)
+     --word-offset → negative left offset of this word inside the phrase
+   Together they make each word's box display the exact pixels that would
+   be at that position in the original single-element gradient — so visually
+   "Touch of More" looks like one continuous gradient, but every word is its
+   own animatable element (blur + opacity work because each word has its own
+   background, no parent text-clip dependency). */
+.touch__accent .blur-word {
+  background: linear-gradient(90deg, #FF01BB 24.04%, #0169E8 100%);
+  background-size: var(--phrase-w, 100%) 100%;
+  background-position: var(--word-offset, 0) 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.blur-reveal--active .blur-word {
+  animation: blurFade 1.2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation-delay: calc(0.2s + var(--i) * 0.2s);
+}
+
+@keyframes blurFade {
+  0% {
+    filter: blur(8px);
+    opacity: 0;
+  }
+  40% {
+    filter: blur(4px);
+    opacity: 0.6;
+  }
+  100% {
+    filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Showcase Sections (4–7): Full-bleed image pages
+   ═══════════════════════════════════════════════════════ */
+
+.showcase {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #000;
+  /* Eliminate subpixel hairline gaps between stacked full-bleed sections */
+  margin-bottom: -1px;
+  line-height: 0;
+}
+
+/* Last showcase doesn't need the overlap */
+.showcase:last-of-type {
+  margin-bottom: 0;
+}
+
+.showcase__img {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  object-fit: cover;
+  display: block;
+  /* GPU layer prevents subpixel rounding on transform-based layouts */
+  transform: translateZ(0);
+}
+
+.showcase__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.35) 0%,
+    transparent 50%
+  );
+  z-index: 1;
+}
+
+.showcase__text {
+  position: absolute;
+  bottom: 80px;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  z-index: 2;
+}
+
+.showcase__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400; /* match partner__text weight */
+  color: #ffffff;
+  letter-spacing: -0.01em; /* match partner__text letter-spacing */
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.showcase__subtitle,
+.showcase__text,
+.showcase__sub,
+.showcase__dash {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  color: #ffffff;
+}
+
+.showcase__subtitle {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.showcase__sub {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.showcase__dash {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: #ffffff;
+}
+
+.showcase__subtitle {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.02em;
+}
+
+/* ── Showcase Video (scroll-driven) ── */
+.showcase-video {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 2400vh;
+  background: #000;
+}
+
+.showcase-video__sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.showcase-video__player {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.showcase-video__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35) 0%, transparent 50%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.showcase-video__text {
+  position: absolute;
+  bottom: 80px;
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  z-index: 2;
+  pointer-events: none;
+  will-change: opacity, filter, transform;
+}
+
+.showcase-video__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+
+.showcase-video__sub {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.showcase-video__dash {
+  display: block;
+  width: 40px;
+  height: 2px;
+  background-color: #ffffff;
+}
+
+.showcase-video__subtitle {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  letter-spacing: 0.02em;
+  white-space: pre-line;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section 9: Who We Are
+   ═══════════════════════════════════════════════════════ */
+
+.section-about {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #c8c8c8;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  padding: 120px var(--page-gutter);
+}
+
+.about__layout {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.about__layout.about-reveal--active {
+  animation: aboutFadeIn 1.2s ease forwards;
+}
+
+@keyframes aboutFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.about__left {
+  width: 48%;
+  flex-shrink: 0;
+  padding-top: 10px;
+}
+
+.about__label {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
+  letter-spacing: 0.0em;
+  white-space: nowrap;
+}
+
+.about__right {
+  width: 52%;
+  display: flex;
+  flex-direction: column;
+}
+
+.about__heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 3.2vw, 48px);
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  margin-bottom: clamp(80px, 12vh, 150px);
+}
+
+.about__heading-accent {
+  color: #ffffff;
+  font-weight: 400;
+}
+
+
+.about__stats-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding-bottom: clamp(30px, 4vh, 50px);
+}
+
+/* ── Stats ticker (hover odometer) ────────────────────────────
+   Two side-by-side columns clip vertically and slide their inner
+   stack in lockstep on hover.
+
+   Sizing math:
+   - Each `.stats-ticker__col` has a fixed height = exactly ONE cell.
+   - `.stats-ticker__inner` is `height: 100%` of the column, so its
+     own definite height = one cell.
+   - Each `.stats-ticker__cell` is `height: 100%` of the inner,
+     stacking as block elements that overflow the inner downward.
+     The column clips the overflow, only one cell visible at a time.
+   - `translateY(-100%)` on the inner moves it by exactly one cell
+     height — i.e. one full step forward in the ticker.
+   ──────────────────────────────────────────────────────────────*/
+.stats-ticker {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  cursor: pointer;
+}
+
+.stats-ticker__col {
+  position: relative;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+/* Number column — height equals the font's actual line-box (font-size × line-height) */
+.stats-ticker__col--number {
+  height: calc(clamp(7rem, 13vw, 11rem) * 0.85);
+}
+
+/* Label column — fits exactly two lines of label text */
+.stats-ticker__col--label {
+  height: calc(14px * 1.5 * 2);
+  text-align: right;
+}
+
+/* The translating stack. Height matches the column so its own
+   100% = one cell, which is what the inline translateY references. */
+.stats-ticker__inner {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  will-change: transform;
+}
+
+/* Each cell is one full column-height tall and stacks vertically;
+   they visually overflow the inner downward but the column clips. */
+.stats-ticker__cell {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.stats-ticker__cell--number {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(7rem, 13vw, 11rem);
+  font-weight: 400;
+  color: #ffffff;
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+}
+
+.stats-ticker__cell--label {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.5;
+}
+
+.about__divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(26, 26, 26, 0.2);
+  margin-bottom: clamp(30px, 4vh, 50px);
+  will-change: transform, opacity;
+}
+
+.about__btn {
+  display: inline-block;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #000000;
+  will-change: transform, opacity;
+  text-decoration: none;
+  padding: 12px 28px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 30px;
+  background: #B1B1B1;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  width: fit-content;
+}
+
+.about__btn:hover {
+  color: #ffffff;
+  background: #1a1a1a;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+
+@media (max-width: 1024px) {
+  .section-about {
+    padding: 100px 40px;
+  }
+
+  .about__left {
+    width: 35%;
+  }
+
+  .about__right {
+    width: 65%;
+  }
+
+  .stats-ticker__cell--number {
+    font-size: clamp(5rem, 10vw, 8rem);
+  }
+
+  .stats-ticker__col--number {
+    height: calc(clamp(5rem, 10vw, 8rem) * 0.85);
+  }
+}
+
+@media (max-width: 768px) {
+  .section-about {
+    padding: 60px 24px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .about__layout {
+    flex-direction: column;
+  }
+
+  .about__left {
+    width: 100%;
+    padding-top: 0;
+    margin-bottom: 32px;
+  }
+
+  .about__right {
+    width: 100%;
+  }
+
+  .about__heading {
+    font-size: 1.8rem;
+    margin-bottom: 60px;
+  }
+
+  .stats-ticker__cell--number {
+    font-size: 5rem;
+  }
+
+  .stats-ticker__col--number {
+    height: calc(5rem * 0.85);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section 10: Meet the Team
+   ═══════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════
+   Section 10: Leadership / Meet the Team
+   ═══════════════════════════════════════════════════════ */
+
+.section-team {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 120px 0 0; /* No bottom padding — pin container takes over */
+  /* No overflow:hidden here — it would break position:sticky on the
+     photo wrapper. The .team__photo-wrapper itself clips horizontally. */
+}
+
+.team__label {
+  display: inline-block;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: 0.01em;
+  padding: 0 var(--page-gutter);
+  margin-bottom: 24px;
+  will-change: transform, opacity;
+}
+
+.team__top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin-bottom: 80px;
+  padding: 0 var(--page-gutter);
+  will-change: transform, opacity;
+}
+
+.team__heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  width: 48%;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+.team__right {
+  width: 52%;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+.team__quote {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 22.5px;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.team__btn {
+  display: inline-block;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  padding: 12px 32px;
+  background-color: #e0e0e0;
+  border-radius: 30px;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+.team__btn:hover {
+  background-color: #1a1a1a;
+  color: #ffffff;
+}
+
+/* Pin container — its scrollable height drives the pan animation.
+   Total = 100vh (for the sticky child to span the viewport once) +
+   pan-budget (the scroll distance the user spends panning the image).
+   While the user is anywhere inside this container with the sticky
+   child pinned, scroll progress 0→1 maps to pan 0→-hiddenRight.
+   The user CANNOT physically scroll past the team section until they
+   have scrolled through this entire container — sticky positioning
+   guarantees the photo wrapper stays pinned at viewport top until
+   the bottom of .team__pin reaches the bottom of the viewport. */
+.team__pin {
+  position: relative;
+  width: 100%;
+  /* 100vh for the sticky child + 100vh of scroll travel that maps
+     proportionally to the horizontal pan. Normal scroll — no jack. */
+  height: 200vh;
+}
+
+.team__photo-wrapper {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  will-change: transform, opacity;
+}
+
+/* The image is wider than the wrapper (preserves natural aspect ratio).
+   JS sets --base-left so the marked person sits at the wrapper's center,
+   then animates --pan from 0 → -hiddenRight as the section scrolls past,
+   sliding the image left to reveal the hidden right portion. */
+.team__photo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  display: block;
+  --base-left: 0px;
+  --pan: 0px;
+  transform: translate3d(calc(var(--base-left) + var(--pan)), 0, 0);
+  will-change: transform;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section 11: Clients
+   ═══════════════════════════════════════════════════════ */
+
+.section-clients {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 0 120px;
+  gap: 80px;
+  overflow: hidden;
+}
+
+.clients-top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 0 var(--page-gutter);
+}
+
+.clients-heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  width: 48%;
+  flex-shrink: 0;
+}
+
+.clients-description {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 22.5px;
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.6;
+  width: 52%;
+}
+
+.clients-logos {
+  overflow: hidden;
+  padding: 80px 0 20px;
+  width: 100%;
+}
+
+.clients-logos-track {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  /* Track contains 4 logo sets (24 logos). -50% translate covers exactly
+     2 sets (12 logos ≈ 2836px) which is wider than any desktop viewport,
+     so the marquee never shows an empty gap.
+     Duration is tuned for ~95 px/s perceived speed. */
+  animation: marquee 45s linear infinite;
+  will-change: transform;
+}
+
+/* Pause only when hovering a specific logo, not the whole container */
+.clients-logos:has(.client-logo-wrap:hover) .clients-logos-track {
+  animation-play-state: paused;
+}
+
+/* Translate by exactly one copy's width.
+   Each logo carries its own trailing gap (margin-right), so track width
+   is exactly 2 copies and -50% is a seamless loop point. */
+@keyframes marquee {
+  0%   { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.client-logo-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* Gap lives on the item itself so the loop math works.
+     Every logo (including the last of each copy) has a trailing 60px,
+     so the seam between copy 2's last logo and copy 1's first logo
+     has the same spacing as any other pair. */
+  margin-right: 60px;
+}
+
+.client-logo-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: 0.55;
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+.client-logo-wrap:hover img {
+  opacity: 1;
+  filter: grayscale(0%);
+}
+
+/* ── Individual logo sizes ──
+   All logos share a uniform 200px visual height.
+   Width matches each logo's natural aspect ratio. */
+.client-logo--emaar      { width: 161px; height: 200px; }
+.client-logo--reliance   { width: 161px; height: 200px; }
+.client-logo--dlf        { width: 128px; height: 200px; }
+.client-logo--sobha      { width: 128px; height: 200px; }
+.client-logo--lodha      { width: 169px; height: 200px; }
+.client-logo--indiabulls { width: 169px; height: 200px; }
+.client-logo--adani      { width: 121px; height: 200px; }
+.client-logo--brigade    { width: 200px; height: 200px; }
+.client-logo--godrej     { width: 201px; height: 200px; }
+.client-logo--prestige   { width: 169px; height: 200px; }
+/* ═══════════════════════════════════════════════════════
+   Section 12: Testimonials
+   ═══════════════════════════════════════════════════════ */
+
+.section-testimonials {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  padding: 120px var(--page-gutter) 60px;
+  overflow: hidden;
+}
+
+.testimonials__label {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1a1a1a;
+  letter-spacing: 0.01em;
+}
+
+.testimonials__center {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.testimonials__heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 0;
+  width: 48%;
+}
+
+.testimonials__quote-heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 44px;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  margin: 0;
+  width: 48%;
+  margin-left: auto;
+}
+
+.testimonials__bottom {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: clamp(180px, 29.6vh, 300px);
+}
+
+.testimonials__arrows {
+  display: flex;
+  gap: 12px;
+}
+
+.testimonials__arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: #e8e8e8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  transition: background 0.25s, color 0.25s;
+}
+
+.testimonials__arrow:hover {
+  background: #1a1a1a;
+  color: #ffffff;
+}
+
+.testimonials__right {
+  width: 48%;
+  display: flex;
+  flex-direction: column;
+  /* Clip the slide-in/out so quotes don't overflow during transitions */
+  overflow: hidden;
+}
+
+/* Inner slide — keyed on testimonialIndex in JSX so React replaces this
+   node on every navigation, restarting the animation cleanly. data-dir
+   picks which side the new content slides in from. */
+.testimonials__slide {
+  display: flex;
+  flex-direction: column;
+  will-change: transform, opacity;
+}
+
+.testimonials__slide[data-dir="next"] {
+  animation: testimonialSlideFromRight 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.testimonials__slide[data-dir="prev"] {
+  animation: testimonialSlideFromLeft 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes testimonialSlideFromRight {
+  0% {
+    opacity: 0;
+    transform: translate3d(60px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes testimonialSlideFromLeft {
+  0% {
+    opacity: 0;
+    transform: translate3d(-60px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.testimonials__quote-text {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+  font-weight: 400;
+  color: #1a1a1a;
+  line-height: 1.7;
+  margin: 0 0 48px 0;
+}
+
+.testimonials__author {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.testimonials__avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-color: #c8c8c8;
+  flex-shrink: 0;
+}
+
+.testimonials__author-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.testimonials__author-name {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.testimonials__author-company {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: #888;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Section 13: Blog / Community
+   ═══════════════════════════════════════════════════════ */
+
+.section-blog {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  min-height: 100vh;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 120px 0; /* Remove horizontal padding constraints */
+  overflow: hidden;
+}
+
+.blog__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 var(--page-gutter); /* Contained in box */
+}
+
+.blog__heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 3.2vw, 3rem);
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin-bottom: 24px;
+}
+
+.blog__arrows {
+  display: flex;
+  gap: 12px;
+  margin-bottom: clamp(40px, 6vh, 80px);
+}
+
+.blog__arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: #e8e8e8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a1a1a;
+  transition: background 0.25s, color 0.25s;
+}
+
+.blog__arrow:hover {
+   background: #1a1a1a;
+  color: #ffffff;
+}
+
+.blog__cards {
+  display: flex;
+  gap: 28px;
+  margin-left: 25%;
+  padding-right: 0;
+  overflow: visible;
+}
+
+/* Each card is a container — image behind, blur overlay + text on top */
+.blog__card {
+  position: relative;
+  flex: 0 0 clamp(300px, 24vw, 380px);
+  height: clamp(400px, 55vh, 560px);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+/* Full-bleed background image */
+.blog__card-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: scale(1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+/* Subtle zoom on hover — parent .blog__card has overflow:hidden so the
+   scaled image stays clipped to the card bounds. */
+.blog__card:hover .blog__card-bg {
+  transform: scale(1.06);
+}
+
+/* Glass blur overlay — Frosted glass effect */
+.blog__card-blur {
+  position: absolute;
+  /* Control positioning with these CSS variables: */
+  top: var(--blur-top, 200px);
+  left: var(--blur-left, 90px);
+  right: var(--blur-right, 0);
+  bottom: var(--blur-bottom, 0);
+  /* Control dimensions with these CSS variables: */
+  width: var(--blur-width, 100%);
+  height: var(--blur-height, auto);
+  /* Optional: Add margin for fine-tuning */
+  margin-top: var(--blur-margin-top, 0);
+  margin-left: var(--blur-margin-left, 0);
+  margin-right: var(--blur-margin-right, 0);
+  margin-bottom: var(--blur-margin-bottom, 0);
+  /* Glass effect */
+  background: rgba(99, 99, 99, 0.25);
+  backdrop-filter: blur(21.5px);
+  filter: blur(21.5px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Text content */
+.blog__card-content {
+  position: absolute;
+  top: var(--blur-top, 200px);
+  left: var(--blur-left, 90px);
+  right: var(--blur-right, 0);
+  bottom: var(--blur-bottom, 0);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px 20px;
+}
+
+.blog__card-title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 28px;
+  letter-spacing: 0;
+  color: #ffffff;
+}
+
+.blog__card-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blog__card-bottom span {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.blog__card-bottom p {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0;
+  color: #ffffff;
+}
+
+/* Footer styles live in src/styles/Footer.css (imported by Footer.jsx). */
+
+/* ═══════════════════════════════════════════════════════
+   Responsive — Small laptop (≤1280px)
+   Just tightens the page gutter and shrinks fixed-px text.
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 1280px) {
+  .homepage {
+    --page-gutter: 60px;
+  }
+
+  .partner__text {
+    font-size: 38px;
+    line-height: 48px;
+    width: 760px;
+  }
+
+  .touch__title {
+    font-size: 38px;
+    line-height: 48px;
+  }
+
+  .clients-description {
+    font-size: 20px;
+  }
+
+  .team__quote {
+    font-size: 20px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   Responsive — Tablet / iPad (≤1024px)
+   Two-column rows collapse to stacks, fonts shrink, gutters
+   tighten. Showcase hero stays full-bleed.
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+  .homepage {
+    --page-gutter: 40px;
+  }
+
+  /* Hero */
+  .hero__title {
+    font-size: clamp(2rem, 6vw, 3.5rem);
+  }
+
+  .hero__description {
+    font-size: 18px;
+    line-height: 26px;
+    max-width: 70vw;
+  }
+
+  /* Partner */
+  .partner__text {
+    font-size: 30px;
+    line-height: 40px;
+    width: auto;
+    max-width: 100%;
+    padding: 0 40px;
+  }
+
+  /* Touch of more */
+  .touch__title {
+    font-size: 30px;
+    line-height: 40px;
+    margin-top: 0;
+    padding: 0 40px;
+  }
+
+  /* Showcase pages */
+  .showcase__text {
+    bottom: 60px;
+  }
+
+  .showcase__title {
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  }
+
+  /* Section 10: Team */
+  .section-team {
+    padding: 80px 0;
+  }
+
+  .team__top {
+    flex-direction: column;
+    gap: 32px;
+    margin-bottom: 48px;
+  }
+
+  .team__heading,
+  .team__right {
+    width: 100%;
+  }
+
+  /* Tablet keeps the pinned 100vh sticky pan — no aspect-ratio override */
+
+  /* Section 11: Clients */
+  .section-clients {
+    padding: 80px 0;
+    gap: 60px;
+  }
+
+  .clients-top {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .clients-heading,
+  .clients-description {
+    width: 100%;
+  }
+
+  .clients-logos {
+    padding: 60px 0;
+  }
+
+  .client-logo-wrap {
+    margin-right: 50px;
+  }
+
+  .client-logo--emaar      { width: 129px; height: 160px; }
+  .client-logo--reliance   { width: 129px; height: 160px; }
+  .client-logo--dlf        { width: 102px; height: 160px; }
+  .client-logo--sobha      { width: 102px; height: 160px; }
+  .client-logo--lodha      { width: 135px; height: 160px; }
+  .client-logo--indiabulls { width: 135px; height: 160px; }
+  .client-logo--adani      { width: 97px;  height: 160px; }
+  .client-logo--brigade    { width: 160px; height: 160px; }
+  .client-logo--godrej     { width: 161px; height: 160px; }
+  .client-logo--prestige   { width: 135px; height: 160px; }
+
+  /* Section 12: Testimonials */
+  .section-testimonials {
+    padding: 60px 40px 80px;
+  }
+
+  .testimonials__heading {
+    font-size: clamp(6rem, 14vw, 12rem);
+  }
+
+  .testimonials__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .testimonials__right {
+    width: 100%;
+  }
+
+  .testimonials__quote-text {
+    font-size: 1.05rem;
+    margin-bottom: 32px;
+  }
+
+  /* Section 13: Blog */
+  .section-blog {
+    padding: 80px 0;
+  }
+
+  .blog__cards {
+    margin-left: 40px;
+    padding-right: 40px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .blog__card {
+    scroll-snap-align: start;
+    flex: 0 0 clamp(280px, 40vw, 340px);
+    height: clamp(380px, 50vh, 480px);
+  }
+
+  /* Footer responsive rules live in src/styles/Footer.css */
+}
+
+/* ═══════════════════════════════════════════════════════
+   Mobile
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  .homepage {
+    --page-gutter: 24px;
+  }
+
+  .hero__title {
+    font-size: clamp(1.8rem, 8vw, 2.6rem);
+  }
+
+  .hero__description {
+    right: 24px;
+    bottom: 32px;
+    font-size: 0.9rem;
+  }
+
+  .partner__text {
+    font-size: 22px;
+    line-height: 30px;
+    padding: 24px;
+  }
+
+  .touch__title {
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .showcase__text {
+    bottom: 32px;
+    left: 24px;
+  }
+
+  .showcase__title {
+    font-size: 1.8rem;
+  }
+
+
+  .section-team {
+    padding: 40px 24px;
+    min-height: auto;
+    height: auto;
+  }
+
+  .team__top {
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .team__heading,
+  .team__right {
+    width: 100%;
+  }
+
+  .team__heading {
+    font-size: 1.8rem;
+  }
+
+  .team__quote {
+    font-size: 1rem;
+  }
+
+  /* Mobile: drop the pinned scroll-jacked pan entirely. Pin container
+     collapses to natural content height; sticky child becomes a normal
+     block; image becomes a normal scaled <img>. */
+  .team__pin {
+    height: auto;
+  }
+
+  .team__photo-wrapper {
+    position: static;
+    height: auto;
+    margin-top: 24px;
+  }
+
+  .team__photo {
+    position: static;
+    width: 100%;
+    height: auto;
+    transform: none;
+  }
+
+  .section-clients {
+    padding: 40px 24px;
+  }
+
+  .clients-top {
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .clients-heading {
+    width: 100%;
+  }
+
+  .clients-description {
+    width: 100%;
+  }
+
+  .clients-logos-track {
+    animation-duration: 22s;
+  }
+
+  .client-logo-wrap {
+    width: 80px !important;
+    height: 35px !important;
+    margin-right: 40px;
+  }
+
+  .section-testimonials {
+    padding: 40px 24px 60px;
+    min-height: auto;
+  }
+
+  .testimonials__heading {
+    font-size: 5rem;
+  }
+
+  .testimonials__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+  }
+
+  .testimonials__right {
+    width: 100%;
+  }
+
+  .testimonials__quote-text {
+    margin-bottom: 32px;
+  }
+
+  .section-blog {
+    padding: 40px 24px;
+    padding-right: 0;
+  }
+
+  .blog__arrows {
+    margin-bottom: 32px;
+  }
+
+  .blog__arrow {
+    width: 36px;
+    height: 36px;
+  }
+
+  .blog__cards {
+    margin-left: 0;
+    padding-right: 0;
+  }
+
+  .blog__card {
+    flex: 0 0 280px;
+    height: 400px;
+  }
+
+  /* Footer responsive rules live in src/styles/Footer.css */
+}
+
+/* ═══════════════════════════════════════════════════════
+   Small mobile (≤480px)
+   Tightens fonts and spacing for narrow phones.
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 480px) {
+  .homepage {
+    --page-gutter: 16px;
+  }
+
+  .hero__title {
+    font-size: 1.9rem;
+    line-height: 1.1;
+    padding: 0 16px;
+  }
+
+  .hero__description {
+    font-size: 0.85rem;
+    line-height: 1.35;
+    padding: 0 16px;
+  }
+
+  .partner__text {
+    font-size: 18px;
+    line-height: 26px;
+    padding: 16px;
+  }
+
+  .touch__title {
+    font-size: 18px;
+    line-height: 26px;
+    padding: 0 16px;
+  }
+
+  .showcase__text {
+    bottom: 24px;
+    left: 16px;
+    right: 16px;
+  }
+
+  .showcase__title {
+    font-size: 1.5rem;
+  }
+
+  .showcase__subtitle {
+    font-size: 0.75rem;
+  }
+
+  .section-about {
+    padding: 60px 16px;
+  }
+
+  .about__heading {
+    font-size: 1.5rem;
+    margin-bottom: 40px;
+  }
+
+  .stats-ticker__cell--number {
+    font-size: 4rem;
+  }
+
+  .stats-ticker__col--number {
+    height: calc(4rem * 0.85);
+  }
+
+  .section-team {
+    padding: 60px 16px;
+  }
+
+  .team__heading {
+    font-size: 1.5rem;
+  }
+
+  .team__quote {
+    font-size: 0.95rem;
+  }
+
+  .section-clients {
+    padding: 60px 16px;
+    gap: 40px;
+  }
+
+  .clients-heading {
+    font-size: 1.6rem;
+  }
+
+  .clients-description {
+    font-size: 0.95rem;
+  }
+
+  .clients-logos {
+    padding: 30px 0;
+  }
+
+  .section-testimonials {
+    padding: 40px 16px 60px;
+  }
+
+  .testimonials__heading {
+    font-size: 3.5rem;
+  }
+
+  .testimonials__quote-heading {
+    font-size: 1.2rem;
+  }
+
+  .testimonials__quote-text {
+    font-size: 0.95rem;
+  }
+
+  .section-blog {
+    padding: 60px 0;
+  }
+
+  .blog__header {
+    padding: 0 16px;
+  }
+
+  .blog__heading {
+    font-size: 1.6rem;
+  }
+
+  .blog__cards {
+    margin-left: 16px;
+    padding-right: 16px;
+    gap: 16px;
+  }
+
+  .blog__card {
+    flex: 0 0 260px;
+    height: 360px;
+  }
+
+  /* Footer responsive rules live in src/styles/Footer.css */
+}
+
+/* ═══════════════════════════════════════════════════════
+   Landscape phones (short height)
+   Hero stays usable on landscape iPhones.
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .hero__title {
+    font-size: 1.8rem;
+  }
+
+  .hero__description {
+    font-size: 0.85rem;
+  }
+
+  .touch__title {
+    margin-top: 0;
+  }
+}
