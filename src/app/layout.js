@@ -3,7 +3,7 @@ import "lenis/dist/lenis.css";
 import SmoothScroll from "@/components/SmoothScroll";
 
 export const metadata = {
-  title: "Sparrow — Experience the Unbuilt tanish vijay rishi",
+  title: "Sparrow — Experience the Unbuilt tanish vijay rishi deepak ",
   description:
     "Imagination enablers & obsessive innovators working in Phygital spaces for forward facilitation of real estate brands.",
 };
