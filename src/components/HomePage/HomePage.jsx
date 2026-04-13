@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import { Grid, GridItem } from "@components/Grid";
 import "@styles/HomePage.css";
 
 // ─────────────────────────────────────────────────────────────────
@@ -156,6 +157,8 @@ export default function HomePage() {
 
   // ── Preloader state (declared early so hero entrance can depend on it) ──
   const [loading, setLoading] = useState(true);
+  const [morphing, setMorphing] = useState(false);
+  const preloaderLogoRef = useRef(null);
 
   // ── Showcase video text overlays ──
   // Define your text entries here. Times are in SECONDS.
@@ -737,7 +740,7 @@ export default function HomePage() {
 
   // Lock scroll while loading so users can't scroll past while preloader is up
   useEffect(() => {
-    if (loading) {
+    if (loading || morphing) {
       document.body.style.overflow = "hidden";
       window["__lenis"]?.stop();
     } else {
@@ -745,10 +748,58 @@ export default function HomePage() {
       document.body.style.overflow = "";
       window["__lenis"]?.start();
     }
-  }, [loading]);
+  }, [loading, morphing]);
+
+  // Start the morph animation: calculate FLIP coordinates and transition
+  const morphStarted = useRef(false);
+  const startMorph = () => {
+    if (morphStarted.current) return;
+    morphStarted.current = true;
+    setLoading(false);
+    setMorphing(true);
+
+    const logo = preloaderLogoRef.current;
+    if (!logo) {
+      setMorphing(false);
+      return;
+    }
+
+    // Measure preloader logo's current position
+    const from = logo.getBoundingClientRect();
+
+    // Navbar logo target: centered horizontally, vertically centered in 56px bar
+    // Navbar logo height is 32px — compute target rect
+    const targetH = 32;
+    const aspect = from.width / from.height;
+    const targetW = targetH * aspect;
+    const targetX = (window.innerWidth - targetW) / 2;
+    const targetY = (56 - targetH) / 2; // centered in navbar height
+
+    // Calculate translation and scale
+    const scaleVal = targetH / from.height;
+    const dx = targetX + targetW / 2 - (from.left + from.width / 2);
+    const dy = targetY + targetH / 2 - (from.top + from.height / 2);
+
+    // Apply CSS custom properties for the morph animation
+    logo.style.setProperty("--morph-dx", `${dx}px`);
+    logo.style.setProperty("--morph-dy", `${dy}px`);
+    logo.style.setProperty("--morph-scale", scaleVal);
+
+    // Listen for the morph animation specifically
+    const onEnd = (e) => {
+      if (e.animationName !== "preloaderLogoMorph") return;
+      logo.removeEventListener("animationend", onEnd);
+      setMorphing(false);
+    };
+    logo.addEventListener("animationend", onEnd);
+    logo.classList.add("preloader__logo--morphing");
+  };
 
   useEffect(() => {
-    const timeout = setTimeout(() => setLoading(false), 8000); // fallback max 8s
+    const timeout = setTimeout(() => startMorph(), 8000); // fallback max 8s
+
+    // Minimum time the preloader must show (let logo animation play out)
+    const minDisplay = new Promise((res) => setTimeout(res, 3000));
 
     const waitForAssets = async () => {
       try {
@@ -776,12 +827,13 @@ export default function HomePage() {
                 })
         );
 
-        await Promise.all([...imagePromises, ...videoPromises]);
+        // Wait for both assets AND minimum display time
+        await Promise.all([...imagePromises, ...videoPromises, minDisplay]);
       } catch (_) {
         // proceed even if some assets fail
       }
       clearTimeout(timeout);
-      setLoading(false);
+      startMorph();
     };
 
     waitForAssets();
@@ -791,13 +843,14 @@ export default function HomePage() {
   return (
     <div className="homepage">
       {/* Preloader overlay */}
-      <div className={`preloader ${loading ? "" : "preloader--hidden"}`}>
+      <div className={`preloader${morphing ? " preloader--morphing" : !loading ? " preloader--hidden" : ""}`}>
         <div className="preloader__blob preloader__blob--1"></div>
         <div className="preloader__blob preloader__blob--2"></div>
         <div className="preloader__blob preloader__blob--3"></div>
         <div className="preloader__logo-wrap">
           <div className="preloader__aura"></div>
           <img
+            ref={preloaderLogoRef}
             src="/images/logo.svg"
             alt="Sparrow"
             className="preloader__logo"
@@ -805,7 +858,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      <Navbar />
+      <Navbar logoVisible={!loading && !morphing} />
 
       {/* Section 1: Hero (fixed) */}
       <section className="section section--hero">
@@ -822,15 +875,29 @@ export default function HomePage() {
         </div>
         <div ref={gradientRef} className="hero-gradient"></div>
         <div ref={heroInnerRef} className="section__inner">
-          <h3 ref={heroTitleRef} className="hero__title">
-            Experience <em>the</em> Unbuilt
-          </h3>
-          <p ref={heroDescRef} className="hero__description">
-            Obsessive innovators. Storytellers.
-            <br />
-             Creators of phygital experiences.
-            <br />
-          </p>
+          <Grid>
+            <GridItem
+              span={{ base: 4, md: 8, lg: 8 }}
+              start={{ lg: 3 }}
+              className="hero__title-cell"
+            >
+              <h3 ref={heroTitleRef} className="hero__title">
+                Experience <em>the</em> Unbuilt
+              </h3>
+            </GridItem>
+            <GridItem
+              span={{ base: 4, md: 6, lg: 6 }}
+              start={{ md: 2, lg: 4 }}
+              className="hero__desc-cell"
+            >
+              <p ref={heroDescRef} className="hero__description">
+                Obsessive innovators. Storytellers.
+                <br />
+                 Creators of phygital experiences.
+                <br />
+              </p>
+            </GridItem>
+          </Grid>
         </div>
       </section>
 
@@ -841,41 +908,57 @@ export default function HomePage() {
       <div className="partner-wrapper">
         <section className="section section--partner"></section>
         <div className="partner-content">
-          <p ref={partnerTextRef} className="partner__text">
-            We partner with real estate brands to transform
-            <br />
-            the unbuilt into{" "}
-            <span className="partner__highlight">
-              immersive, tech-led experiences
-            </span>
-            <br />
-            that move hearts, and decisions.
-          </p>
+          <Grid>
+            <GridItem
+              span={{ base: 4, md: 8, lg: 10 }}
+              start={{ lg: 2 }}
+              className="partner__text-cell"
+            >
+              <p ref={partnerTextRef} className="partner__text">
+                We partner with real estate brands to transform
+                <br />
+                the unbuilt into{" "}
+                <span className="partner__highlight">
+                  immersive, tech-led experiences
+                </span>
+                <br />
+                that move hearts, and decisions.
+              </p>
+            </GridItem>
+          </Grid>
         </div>
       </div>
 
       {/* Section 3: Touch of More — blur-word reveal */}
       <section className="section section--touch" data-navbar-theme="dark">
-        <h2 ref={touchTitleRef} className="touch__title">
-          {["Experiences", "with", "a"].map((w, i) => (
-            <span key={i} className="blur-word" style={{ "--i": i }}>
-              {w}{"\u00A0"}
-            </span>
-          ))}
-          <br />
-          <span ref={touchAccentRef} className="touch__accent">
-            {["Touch", "of", "More"].map((w, i) => (
-              <span
-                key={i + 3}
-                className="blur-word"
-                style={{ "--i": i + 3 }}
-              >
-                {w}
-                {i < 2 ? "\u00A0" : ""}
+        <Grid>
+          <GridItem
+            span={{ base: 4, md: 8, lg: 10 }}
+            start={{ lg: 2 }}
+            className="touch__title-cell"
+          >
+            <h2 ref={touchTitleRef} className="touch__title">
+              {["Experiences", "with", "a"].map((w, i) => (
+                <span key={i} className="blur-word" style={{ "--i": i }}>
+                  {w}{"\u00A0"}
+                </span>
+              ))}
+              <br />
+              <span ref={touchAccentRef} className="touch__accent">
+                {["Touch", "of", "More"].map((w, i) => (
+                  <span
+                    key={i + 3}
+                    className="blur-word"
+                    style={{ "--i": i + 3 }}
+                  >
+                    {w}
+                    {i < 2 ? "\u00A0" : ""}
+                  </span>
+                ))}
               </span>
-            ))}
-          </span>
-        </h2>
+            </h2>
+          </GridItem>
+        </Grid>
       </section>
 
       {/* ═══ Showcase Video Section — scroll-driven playback ═══ */}
@@ -901,10 +984,14 @@ export default function HomePage() {
                 exit={{ opacity: 0, filter: "blur(16px)", y: -10 }}
                 transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1] }}
               >
-                <h2 className="showcase-video__title">{activeLegend.title}</h2>
-                <div className="showcase-video__sub">
-                  <span className="showcase-video__subtitle">{activeLegend.subtitle}</span>
-                </div>
+                <Grid>
+                  <GridItem span={{ base: 4, md: 6, lg: 8 }}>
+                    <h2 className="showcase-video__title">{activeLegend.title}</h2>
+                    <div className="showcase-video__sub">
+                      <span className="showcase-video__subtitle">{activeLegend.subtitle}</span>
+                    </div>
+                  </GridItem>
+                </Grid>
               </motion.div>
             )}
           </AnimatePresence>
@@ -913,11 +1000,11 @@ export default function HomePage() {
 
       {/* ═══ Section 9: Who We Are ═══ */}
       <section className="section-about">
-        <div ref={aboutLayoutRef} className="about__layout">
-          <div className="about__left">
+        <Grid ref={aboutLayoutRef} className="about__layout">
+          <GridItem span={{ base: 4, md: 3, lg: 4 }} className="about__left">
             <span className="about__label">Who We Are</span>
-          </div>
-          <div className="about__right">
+          </GridItem>
+          <GridItem span={{ base: 4, md: 5, lg: 8 }} className="about__right">
             <h2 className="about__heading">
               We are a tech-driven, creativity-led{" "}
               <span className="about__heading-accent">phygital experience design</span>{" "}
@@ -928,20 +1015,27 @@ export default function HomePage() {
             </div>
             <div className="about__divider"></div>
             <a href="/about" className="about__btn">More About Us</a>
-          </div>
-        </div>
+          </GridItem>
+        </Grid>
       </section>
 
       {/* ═══ Section 10: Leadership / Meet the Team ═══ */}
       <section className="section-team" data-navbar-theme="dark">
-        <span ref={teamLabelRef} className="team__label">Leadership/Team</span>
-        <div ref={teamTopRef} className="team__top">
-          <h2 className="team__heading">Leaders bored<br />with Conformity</h2>
-          <div className="team__right">
+        <Grid>
+          <GridItem span={12}>
+            <span ref={teamLabelRef} className="team__label">Leadership/Team</span>
+          </GridItem>
+        </Grid>
+
+        <Grid ref={teamTopRef} className="team__top">
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <h2 className="team__heading">Leaders bored<br />with Conformity</h2>
+          </GridItem>
+          <GridItem span={{ base: 4, md: 4, lg: 6 }} className="team__right">
             <p className="team__quote">Good enough is never where we stop,<br></br> and we learned that from the best.</p>
             <a href="/about" className="team__btn">Meet the Team</a>
-          </div>
-        </div>
+          </GridItem>
+        </Grid>
         {/* Pin container — height = 1 viewport of pinned scrolling AFTER the
             sticky child reaches the top. The sticky child is the photo wrapper;
             it gets pinned at viewport top, and the user's scroll progress
@@ -955,16 +1049,20 @@ export default function HomePage() {
 
       {/* ═══ Section 11: Clients ═══ */}
       <section className="section-clients" data-navbar-theme="dark">
-        <div className="clients-top">
-          <h2 className="clients-heading">
-            Clients We&apos;ve<br />Surprised So Far
-          </h2>
-          <p className="clients-description">
-            We bring the unimaginable to ground,<br></br>
-            surprising our clients with solutions<br></br>
-            never seen before.
-          </p>
-        </div>
+        <Grid className="clients-top">
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <h2 className="clients-heading">
+              Clients We&apos;ve<br />Surprised So Far
+            </h2>
+          </GridItem>
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <p className="clients-description">
+              We bring the unimaginable to ground,<br></br>
+              surprising our clients with solutions<br></br>
+              never seen before.
+            </p>
+          </GridItem>
+        </Grid>
         <div className="clients-logos">
           <div className="clients-logos-track">
             {/* Render the logo set 4 times so each "half" of the track
@@ -1008,33 +1106,45 @@ export default function HomePage() {
 
       {/* ═══ Section 12: Testimonials ═══ */}
       <section className="section-testimonials" data-navbar-theme="dark">
-        <span className="testimonials__label">Testimonials</span>
-        <div className="testimonials__center">
-          <h2 className="testimonials__heading">Out Loud</h2>
-          <h3 className="testimonials__quote-heading">They felt it.<br></br>They said it.</h3>
-        </div>
-        <div className="testimonials__bottom">
-          <div className="testimonials__arrows">
-            <button
-              className="testimonials__arrow testimonials__arrow--left"
-              aria-label="Previous"
-              onClick={() => goToTestimonial(-1)}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M19 12H5M5 12L12 19M5 12L12 5" />
-              </svg>
-            </button>
-            <button
-              className="testimonials__arrow testimonials__arrow--right"
-              aria-label="Next"
-              onClick={() => goToTestimonial(1)}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" />
-              </svg>
-            </button>
-          </div>
-          <div className="testimonials__right">
+        <Grid>
+          <GridItem span={12}>
+            <span className="testimonials__label">Testimonials</span>
+          </GridItem>
+        </Grid>
+
+        <Grid className="testimonials__center">
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <h2 className="testimonials__heading">Out Loud</h2>
+          </GridItem>
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <h3 className="testimonials__quote-heading">They felt it.<br></br>They said it.</h3>
+          </GridItem>
+        </Grid>
+
+        <Grid className="testimonials__bottom">
+          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+            <div className="testimonials__arrows">
+              <button
+                className="testimonials__arrow testimonials__arrow--left"
+                aria-label="Previous"
+                onClick={() => goToTestimonial(-1)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M19 12H5M5 12L12 19M5 12L12 5" />
+                </svg>
+              </button>
+              <button
+                className="testimonials__arrow testimonials__arrow--right"
+                aria-label="Next"
+                onClick={() => goToTestimonial(1)}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" />
+                </svg>
+              </button>
+            </div>
+          </GridItem>
+          <GridItem span={{ base: 4, md: 4, lg: 6 }} className="testimonials__right">
             {/* Keyed on index so React replaces the node, restarting the CSS
                 slide-in animation. data-dir picks which direction to slide from. */}
             <div
@@ -1057,77 +1167,57 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          </GridItem>
+        </Grid>
       </section>
 
       {/* ═══ Section 13: Latest from the Community ═══ */}
       <section className="section-blog" data-navbar-theme="dark">
-        <div className="blog__header">
-          <h2 className="blog__heading">
-            Latest from
-            <br />
-            the community
-          </h2>
-          <div className="blog__arrows">
-            <button className="blog__arrow blog__arrow--left" aria-label="Previous">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M19 12H5M5 12L12 19M5 12L12 5" />
-              </svg>
-            </button>
-            <button className="blog__arrow blog__arrow--right" aria-label="Next">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M5 12H19M19 12L12 5M19 12L12 19" />
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div className="blog__cards">
-          {/* Card 1 */}
-          <article className="blog__card">
-            <img className="blog__card-bg" src="/images/community_1.webp" alt="" loading="lazy" />
-            <div className="blog__card-blur"></div>
-            <div className="blog__card-content">
-              <h3 className="blog__card-title">
-                Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
-              </h3>
-              <div className="blog__card-bottom">
-                <span>6 min</span>
-                <p>Real Estate, Experience Centre</p>
-              </div>
+        <Grid className="blog__header">
+          <GridItem span={{ base: 4, md: 5, lg: 8 }}>
+            <h2 className="blog__heading">
+              Latest from
+              <br />
+              the community
+            </h2>
+          </GridItem>
+          <GridItem span={{ base: 4, md: 3, lg: 4 }} className="blog__arrows-cell">
+            <div className="blog__arrows">
+              <button className="blog__arrow blog__arrow--left" aria-label="Previous">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M19 12H5M5 12L12 19M5 12L12 5" />
+                </svg>
+              </button>
+              <button className="blog__arrow blog__arrow--right" aria-label="Next">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" />
+                </svg>
+              </button>
             </div>
-          </article>
+          </GridItem>
+        </Grid>
 
-          {/* Card 2 */}
-          <article className="blog__card">
-            <img className="blog__card-bg" src="/images/community_2.webp" alt="" loading="lazy" />
-            <div className="blog__card-blur"></div>
-            <div className="blog__card-content">
-              <h3 className="blog__card-title">
-                Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
-              </h3>
-              <div className="blog__card-bottom">
-                <span>6 min</span>
-                <p>Real Estate, Experience Centre</p>
+        <Grid className="blog__cards">
+          {[
+            { src: "/images/community_1.webp" },
+            { src: "/images/community_2.webp" },
+            { src: "/images/community_3.webp" },
+          ].map((card, i) => (
+            <GridItem key={i} span={{ base: 4, md: 8, lg: 4 }} as="article" className="blog__card">
+              <img className="blog__card-bg" src={card.src} alt="" loading="lazy" />
+              <div className="blog__card-blur"></div>
+              <div className="blog__card-content">
+                <h3 className="blog__card-title">
+                  Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
+                </h3>
+                <div className="blog__card-bottom">
+                  <span>6 min</span>
+                  <p>Real Estate, Experience Centre</p>
+                </div>
               </div>
-            </div>
-          </article>
-
-          {/* Card 3 */}
-          <article className="blog__card">
-            <img className="blog__card-bg" src="/images/community_3.webp" alt="" loading="lazy" />
-            <div className="blog__card-blur"></div>
-            <div className="blog__card-content">
-              <h3 className="blog__card-title">
-                Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
-              </h3>
-              <div className="blog__card-bottom">
-                <span>6 min</span>
-                <p>Real Estate, Experience Centre</p>
-              </div>
-            </div>
-          </article>
-        </div>
+            </GridItem>
+          ))}
+        </Grid>
       </section>
 
       {/* ═══ Section 13: Footer ═══ */}
