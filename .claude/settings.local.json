@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(timeout 10 tail -f C:\\\\Users\\\\sparrow\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-sparrow-Desktop-Sparrowi2\\\\3cdd0c2a-8b17-459c-9788-a9bf4524dcf3\\\\tasks\\\\b2xzbqd12.output)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8004/)",
+      "Bash(curl -s http://localhost:8004/)",
+      "Bash(npm run:*)",
+      "Bash(netstat -ano)",
+      "Bash(taskkill //PID 8840 //F)",
+      "Bash(npm install:*)",
+      "Bash(taskkill //PID 15468 //F)",
+      "Bash(rm -rf .next)"
+    ]
+  }
+}
