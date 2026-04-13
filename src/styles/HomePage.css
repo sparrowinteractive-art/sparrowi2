@@ -28,6 +28,24 @@
   pointer-events: none;
 }
 
+/* Morphing phase — background fades out, logo stays visible to fly to navbar */
+.preloader--morphing {
+  pointer-events: none;
+  overflow: visible;
+  animation: preloaderBgFade 0.5s ease forwards;
+}
+
+.preloader--morphing .preloader__blob,
+.preloader--morphing .preloader__aura {
+  opacity: 0 !important;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes preloaderBgFade {
+  0%   { background-color: #ffffff; }
+  100% { background-color: transparent; }
+}
+
 /* Gradient blobs — three layered radial gradients, regi.it-inspired */
 .preloader__blob {
   position: absolute;
@@ -142,6 +160,23 @@
   0%   { opacity: 0;   filter: blur(20px); transform: scale(0.85); }
   50%  { opacity: 0.9; filter: blur(4px);  transform: scale(0.95); }
   100% { opacity: 1;   filter: blur(0px);  transform: scale(1); }
+}
+
+/* Logo morph — flies from preloader center to navbar position */
+.preloader__logo--morphing {
+  animation: preloaderLogoMorph 0.8s cubic-bezier(0.4, 0, 0, 1) forwards !important;
+  filter: blur(0px) !important;
+}
+
+@keyframes preloaderLogoMorph {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--morph-dx), var(--morph-dy)) scale(var(--morph-scale));
+  }
 }
 
 /* ═══════════════════════════════════════════════════════
@@ -276,6 +311,13 @@
   will-change: transform, opacity;
 }
 
+/* Hero text cells — centered content inside the 12-col track */
+.hero__title-cell,
+.hero__desc-cell {
+  display: flex;
+  justify-content: center;
+}
+
 .hero__title {
   font-family: "Neue Montreal", "Inter", Arial, sans-serif;
   font-size: clamp(1.8rem, 5.5vw, 4.5rem);
@@ -364,10 +406,16 @@
   text-align: center;
   letter-spacing: -0.01em;
   color: #ffffff;
-  width: 908px;
   max-width: 100%;
   position: relative;
   z-index: 2;
+  margin: 0 auto;
+}
+
+.partner__text-cell,
+.touch__title-cell {
+  display: flex;
+  justify-content: center;
 }
 
 .partner__highlight {
@@ -609,8 +657,8 @@
 .showcase-video__text {
   position: absolute;
   bottom: 80px;
-  left: var(--page-gutter);
-  right: var(--page-gutter);
+  left: 0;
+  right: 0;
   z-index: 2;
   pointer-events: none;
   will-change: opacity, filter, transform;
@@ -661,14 +709,12 @@
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding: 120px var(--page-gutter);
+  padding: 120px 0;
 }
 
+/* Layout handled by <Grid>; animation + alignment hooks only. */
 .about__layout {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: start;
   opacity: 0;
   transform: translateY(30px);
 }
@@ -689,8 +735,6 @@
 }
 
 .about__left {
-  width: 48%;
-  flex-shrink: 0;
   padding-top: 10px;
 }
 
@@ -704,7 +748,6 @@
 }
 
 .about__right {
-  width: 52%;
   display: flex;
   flex-direction: column;
 }
@@ -723,7 +766,6 @@
   color: #ffffff;
   font-weight: 400;
 }
-
 
 .about__stats-row {
   display: flex;
@@ -843,15 +885,7 @@
 
 @media (max-width: 1024px) {
   .section-about {
-    padding: 100px 40px;
-  }
-
-  .about__left {
-    width: 35%;
-  }
-
-  .about__right {
-    width: 65%;
+    padding: 100px 0;
   }
 
   .stats-ticker__cell--number {
@@ -865,23 +899,14 @@
 
 @media (max-width: 768px) {
   .section-about {
-    padding: 60px 24px;
+    padding: 60px 0;
     height: auto;
     min-height: 100vh;
   }
 
-  .about__layout {
-    flex-direction: column;
-  }
-
   .about__left {
-    width: 100%;
     padding-top: 0;
     margin-bottom: 32px;
-  }
-
-  .about__right {
-    width: 100%;
   }
 
   .about__heading {
@@ -928,17 +953,14 @@
   font-weight: 400;
   color: #1a1a1a;
   letter-spacing: 0.01em;
-  padding: 0 var(--page-gutter);
   margin-bottom: 24px;
   will-change: transform, opacity;
 }
 
+/* Layout handled by <Grid>; spacing + animation hooks only. */
 .team__top {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
+  align-items: start;
   margin-bottom: 80px;
-  padding: 0 var(--page-gutter);
   will-change: transform, opacity;
 }
 
@@ -949,13 +971,10 @@
   color: #1a1a1a;
   line-height: 1.25;
   letter-spacing: -0.02em;
-  width: 48%;
-  flex-shrink: 0;
   margin: 0;
 }
 
 .team__right {
-  width: 52%;
   display: flex;
   flex-direction: column;
   gap: 30px;
@@ -1051,11 +1070,9 @@
   overflow: hidden;
 }
 
+/* Layout handled by <Grid>; alignment only. */
 .clients-top {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  padding: 0 var(--page-gutter);
+  align-items: start;
 }
 
 .clients-heading {
@@ -1065,8 +1082,6 @@
   color: #1a1a1a;
   line-height: 1.25;
   letter-spacing: -0.02em;
-  width: 48%;
-  flex-shrink: 0;
 }
 
 .clients-description {
@@ -1075,7 +1090,6 @@
   font-weight: 400;
   color: #1a1a1a;
   line-height: 1.6;
-  width: 52%;
 }
 
 .clients-logos {
@@ -1158,9 +1172,7 @@
   width: 100%;
   min-height: 100vh;
   background-color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  padding: 120px var(--page-gutter) 60px;
+  padding: 120px 0 60px;
   overflow: hidden;
 }
 
@@ -1172,12 +1184,10 @@
   letter-spacing: 0.01em;
 }
 
+/* Layout handled by <Grid>; spacing only. */
 .testimonials__center {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: space-between;
   margin-top: 20px;
+  align-items: start;
 }
 
 .testimonials__heading {
@@ -1188,7 +1198,6 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
   margin: 0;
-  width: 48%;
 }
 
 .testimonials__quote-heading {
@@ -1199,16 +1208,12 @@
   line-height: 1.3;
   letter-spacing: -0.02em;
   margin: 0;
-  width: 48%;
-  margin-left: auto;
 }
 
+/* Layout handled by <Grid>; spacing + alignment only. */
 .testimonials__bottom {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
   margin-top: clamp(180px, 29.6vh, 300px);
+  align-items: end;
 }
 
 .testimonials__arrows {
@@ -1236,7 +1241,6 @@
 }
 
 .testimonials__right {
-  width: 48%;
   display: flex;
   flex-direction: column;
   /* Clip the slide-in/out so quotes don't overflow during transitions */
@@ -1343,11 +1347,16 @@
   overflow: hidden;
 }
 
+/* Layout handled by <Grid>; only spacing + alignment helpers remain. */
 .blog__header {
+  margin-bottom: 0;
+  align-items: end;
+}
+
+.blog__arrows-cell {
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: 0 var(--page-gutter); /* Contained in box */
+  justify-content: flex-end;
+  align-items: flex-end;
 }
 
 .blog__heading {
@@ -1385,18 +1394,14 @@
   color: #ffffff;
 }
 
+/* Layout via <Grid>; card rendering stays the same visually. */
 .blog__cards {
-  display: flex;
-  gap: 28px;
-  margin-left: 25%;
-  padding-right: 0;
-  overflow: visible;
+  margin-top: clamp(24px, 4vh, 40px);
 }
 
 /* Each card is a container — image behind, blur overlay + text on top */
 .blog__card {
   position: relative;
-  flex: 0 0 clamp(300px, 24vw, 380px);
   height: clamp(400px, 55vh, 560px);
   border-radius: 0;
   overflow: hidden;
@@ -1580,14 +1585,7 @@
   }
 
   .team__top {
-    flex-direction: column;
-    gap: 32px;
     margin-bottom: 48px;
-  }
-
-  .team__heading,
-  .team__right {
-    width: 100%;
   }
 
   /* Tablet keeps the pinned 100vh sticky pan — no aspect-ratio override */
@@ -1596,16 +1594,6 @@
   .section-clients {
     padding: 80px 0;
     gap: 60px;
-  }
-
-  .clients-top {
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .clients-heading,
-  .clients-description {
-    width: 100%;
   }
 
   .clients-logos {
@@ -1629,21 +1617,11 @@
 
   /* Section 12: Testimonials */
   .section-testimonials {
-    padding: 60px 40px 80px;
+    padding: 60px 0 80px;
   }
 
   .testimonials__heading {
     font-size: clamp(6rem, 14vw, 12rem);
-  }
-
-  .testimonials__bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 40px;
-  }
-
-  .testimonials__right {
-    width: 100%;
   }
 
   .testimonials__quote-text {
@@ -1656,17 +1634,7 @@
     padding: 80px 0;
   }
 
-  .blog__cards {
-    margin-left: 40px;
-    padding-right: 40px;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-
   .blog__card {
-    scroll-snap-align: start;
-    flex: 0 0 clamp(280px, 40vw, 340px);
     height: clamp(380px, 50vh, 480px);
   }
 
@@ -1714,20 +1682,13 @@
 
 
   .section-team {
-    padding: 40px 24px;
+    padding: 40px 0;
     min-height: auto;
     height: auto;
   }
 
   .team__top {
-    flex-direction: column;
-    gap: 24px;
     margin-bottom: 32px;
-  }
-
-  .team__heading,
-  .team__right {
-    width: 100%;
   }
 
   .team__heading {
@@ -1759,20 +1720,7 @@
   }
 
   .section-clients {
-    padding: 40px 24px;
-  }
-
-  .clients-top {
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .clients-heading {
-    width: 100%;
-  }
-
-  .clients-description {
-    width: 100%;
+    padding: 40px 0;
   }
 
   .clients-logos-track {
@@ -1786,7 +1734,7 @@
   }
 
   .section-testimonials {
-    padding: 40px 24px 60px;
+    padding: 40px 0 60px;
     min-height: auto;
   }
 
@@ -1794,23 +1742,12 @@
     font-size: 5rem;
   }
 
-  .testimonials__bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 40px;
-  }
-
-  .testimonials__right {
-    width: 100%;
-  }
-
   .testimonials__quote-text {
     margin-bottom: 32px;
   }
 
   .section-blog {
-    padding: 40px 24px;
-    padding-right: 0;
+    padding: 40px 0;
   }
 
   .blog__arrows {
@@ -1822,13 +1759,7 @@
     height: 36px;
   }
 
-  .blog__cards {
-    margin-left: 0;
-    padding-right: 0;
-  }
-
   .blog__card {
-    flex: 0 0 280px;
     height: 400px;
   }
 
@@ -1884,7 +1815,7 @@
   }
 
   .section-about {
-    padding: 60px 16px;
+    padding: 60px 0;
   }
 
   .about__heading {
@@ -1901,7 +1832,7 @@
   }
 
   .section-team {
-    padding: 60px 16px;
+    padding: 60px 0;
   }
 
   .team__heading {
@@ -1913,7 +1844,7 @@
   }
 
   .section-clients {
-    padding: 60px 16px;
+    padding: 60px 0;
     gap: 40px;
   }
 
@@ -1930,7 +1861,7 @@
   }
 
   .section-testimonials {
-    padding: 40px 16px 60px;
+    padding: 40px 0 60px;
   }
 
   .testimonials__heading {
@@ -1949,22 +1880,11 @@
     padding: 60px 0;
   }
 
-  .blog__header {
-    padding: 0 16px;
-  }
-
   .blog__heading {
     font-size: 1.6rem;
   }
 
-  .blog__cards {
-    margin-left: 16px;
-    padding-right: 16px;
-    gap: 16px;
-  }
-
   .blog__card {
-    flex: 0 0 260px;
     height: 360px;
   }
 

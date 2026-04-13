@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 import "@styles/Navbar.css";
 
-export default function Navbar() {
+export default function Navbar({ logoVisible = true }) {
   const { scrollY } = useScroll();
   const lastY = useRef(0);
   // "full" = top of page, "hidden" = scrolled down, "floating" = scrolled up
@@ -64,7 +64,7 @@ export default function Navbar() {
         <span className="navbar__hamburger-line"></span>
       </button>
 
-      <a href="/" className="navbar__logo">
+      <a href="/" className={`navbar__logo${logoVisible ? "" : " navbar__logo--hidden"}`}>
         <img src="/images/logo.svg" alt="Sparrow" className="navbar__logo-light" />
         <img src="/images/logo-black.svg" alt="" className="navbar__logo-dark" />
       </a>

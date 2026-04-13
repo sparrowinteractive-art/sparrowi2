@@ -109,6 +109,15 @@
   object-fit: contain;
 }
 
+/* Hidden during preloader morph, then fades in */
+.navbar__logo--hidden {
+  opacity: 0;
+}
+
+.navbar__logo {
+  transition: opacity 0.3s ease;
+}
+
 /* ───── CTA ───── */
 
 .navbar__cta {
