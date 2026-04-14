@@ -1032,7 +1032,7 @@ export default function HomePage() {
             <h2 className="team__heading">Leaders bored<br />with Conformity</h2>
           </GridItem>
           <GridItem span={{ base: 4, md: 4, lg: 6 }} className="team__right">
-            <p className="team__quote">Good enough is never where we stop,<br></br> and we learned that from the best.</p>
+            <p className="team__quote">Good enough is never where we stop,<br /> and we learned that from the best.</p>
             <a href="/about" className="team__btn">Meet the Team</a>
           </GridItem>
         </Grid>
@@ -1057,8 +1057,8 @@ export default function HomePage() {
           </GridItem>
           <GridItem span={{ base: 4, md: 4, lg: 6 }}>
             <p className="clients-description">
-              We bring the unimaginable to ground,<br></br>
-              surprising our clients with solutions<br></br>
+              We bring the unimaginable to ground,<br />
+              surprising our clients with solutions<br />
               never seen before.
             </p>
           </GridItem>
@@ -1202,8 +1202,8 @@ export default function HomePage() {
             { src: "/images/community_1.webp" },
             { src: "/images/community_2.webp" },
             { src: "/images/community_3.webp" },
-          ].map((card, i) => (
-            <GridItem key={i} span={{ base: 4, md: 8, lg: 4 }} as="article" className="blog__card">
+          ].map((card) => (
+            <GridItem key={card.src} span={{ base: 4, md: 8, lg: 4 }} as="article" className="blog__card">
               <img className="blog__card-bg" src={card.src} alt="" loading="lazy" />
               <div className="blog__card-blur"></div>
               <div className="blog__card-content">
