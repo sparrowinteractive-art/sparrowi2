@@ -1,0 +1,461 @@
+/* ═══════════════════════════════════════════════════════
+   ImmersivePage — full-viewport curved-screen frames
+   Each .immersive-frame fills exactly one browser viewport.
+   The "curved screen" look is created by two oversized,
+   round-radius black caps positioned partly off-screen so
+   only their inner curved edges intrude into the frame —
+   leaving an elliptical reveal of the background image.
+   ═══════════════════════════════════════════════════════ */
+
+.immersive-page {
+  --page-gutter: max(80px, calc((100vw - 1400px) / 2));
+  width: 100%;
+  background-color: #000;
+  color: #fff;
+  overflow-x: clip;
+}
+
+/* Common frame wrapper — every frame is exactly one viewport tall */
+.immersive-frame {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Scroll-to-explore cue (mouse + animated white wheel) ── */
+.touch__scroll-cue {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.scroll-cue__mouse {
+  width: 24px;
+  height: 38px;
+  border-radius: 999px;
+  background: rgba(120, 120, 120, 0.85);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  padding-top: 7px;
+  box-sizing: border-box;
+}
+
+.scroll-cue__wheel {
+  width: 2px;
+  height: 8px;
+  border-radius: 1px;
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #d0d0d0 50%,
+    #ffffff 100%
+  );
+  background-size: 100% 200%;
+  background-position: 0 0%;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+  animation:
+    scrollCueWheelMove 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite,
+    scrollCueWheelGradient 2.4s linear infinite;
+}
+
+@keyframes scrollCueWheelMove {
+  0%   { transform: translateY(0);    opacity: 1; }
+  60%  { transform: translateY(12px); opacity: 0; }
+  100% { transform: translateY(0);    opacity: 0; }
+}
+
+@keyframes scrollCueWheelGradient {
+  0%   { background-position: 0 0%;   }
+  100% { background-position: 0 100%; }
+}
+
+.scroll-cue__label {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .touch__scroll-cue {
+    bottom: 24px;
+    gap: 8px;
+  }
+}
+
+/* ── Frame 1: Intro ───────────────────────────────────── */
+
+.immersive-frame--intro {
+  background-color: #0a0a0a;
+}
+
+.immersive-intro__inner {
+  width: 100%;
+  padding-top: 96px;
+}
+
+.immersive-intro__title-cell {
+  display: flex;
+  align-items: flex-start;
+}
+
+.immersive-intro__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(3rem, 8vw, 7rem);
+  font-weight: 400;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: rgba(255, 255, 255, 0.45);
+  margin: 0;
+}
+
+.immersive-intro__copy-cell {
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.immersive-intro__lede {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 1.5;
+  margin: 0;
+  color: #ffffff;
+}
+
+.immersive-intro__accent {
+  background: linear-gradient(90deg, #FF01BB 24.04%, #0169E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.immersive-intro__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Curved frames — image with elliptical black caps ── */
+
+.immersive-frame--curved {
+  /* The bg image lives on a child div so its filters don't fight with the caps */
+}
+
+.immersive-frame__bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--frame-bg);
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+}
+
+/* Video variant — single <video> with native loop. The translateZ + the
+   isolation rule below promote the video to its OWN GPU compositor layer
+   so Lenis-driven scroll repaints can never invalidate it mid-frame
+   (which is what you saw as "flicker"). The inset overscan covers any
+   1-pixel hairline gap that compositors sometimes leave at the edges. */
+.immersive-frame__video {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  object-fit: cover;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  isolation: isolate;
+  contain: paint;
+}
+
+/* Containing section gets its own paint layer too, so the curved caps
+   above the video don't trigger a repaint of the whole frame on scroll. */
+.immersive-frame--curved {
+  isolation: isolate;
+  transform: translateZ(0);
+}
+
+/* ── Pinned stack (exoape-style sticky reveal) ────────────────────────
+   .immersive-pin is N viewports tall. Inside, .immersive-pin__sticky
+   stays at top:0 for the whole scroll-through, so the curved frame
+   appears locked to the viewport while media/text layers crossfade.
+   ──────────────────────────────────────────────────────────────────── */
+.immersive-pin {
+  position: relative;
+  width: 100%;
+}
+
+.immersive-pin__sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100dvh;
+  /* Override the .immersive-frame defaults that don't apply when sticky */
+  width: 100%;
+}
+
+/* All media layers occupy the same space; opacity is JS-driven. */
+.immersive-pin__media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.immersive-pin__media-layer {
+  position: absolute;
+  inset: 0;
+  /* will-change hints the compositor; transition softens any tiny scroll
+     stutter so the crossfade looks continuous instead of stepwise. */
+  will-change: opacity;
+  transition: opacity 80ms linear;
+}
+
+.immersive-pin__media-layer .immersive-frame__bg {
+  position: absolute;
+  inset: 0;
+  background-image: var(--frame-bg);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Vertical progress bar on the right edge — track is a faint white line,
+   fill scales from 0→1 vertically as the user scrolls through all frames.
+   z:3 keeps it above caps (z:1) and text (z:2). */
+.immersive-pin__progress {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 40vh;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.immersive-pin__progress-fill {
+  position: absolute;
+  inset: 0;
+  background: #ffffff;
+  border-radius: 2px;
+  transform-origin: top center;
+  transform: scaleY(0);
+  will-change: transform;
+  transition: transform 80ms linear;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+@media (max-width: 768px) {
+  .immersive-pin__progress {
+    right: 12px;
+    height: 30vh;
+  }
+}
+
+/* Text layers — stacked at the BOTTOM of the frame, below the curved video.
+   Wrapper fills the frame absolutely; layers are individually positioned
+   bottom: Npx so the title+desc sit at the bottom edge of the page with
+   visual padding clear of the bottom black cap. z-index: 2 keeps them
+   above the curved caps (z:1) and the video (z:0). */
+.immersive-pin__text {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.immersive-pin__text-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: clamp(40px, 6vh, 80px);
+  text-align: center;
+  will-change: opacity;
+  transition: opacity 80ms linear;
+}
+
+/* Top + bottom black caps — oversized ellipses positioned mostly off-screen
+   so only their curved inner edges enter the visible frame, producing the
+   "curved screen theatre" lens reveal in the reference image. The cap is
+   wider than the viewport and tall, so the visible curve is shallow at
+   the sides and dips deepest at the horizontal center — matching the way
+   the black descends to roughly 30% of the frame height at center in the
+   reference, while the corners remain only mildly clipped.
+   The title sits center-frame in the visible image band, so we keep
+   caps at z:1 (above media at z:0, below text at z:2). */
+.immersive-frame__cap {
+  position: absolute;
+  left: -25%;
+  width: 150%;
+  height: 95vh;
+  background-color: #000;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.immersive-frame__cap--top {
+  top: -65vh;
+}
+
+.immersive-frame__cap--bottom {
+  bottom: -65vh;
+}
+
+.immersive-frame__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  text-align: center;
+}
+
+.immersive-frame__text-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.immersive-frame__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(1.6rem, 2.5vw, 2.25rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: #ffffff;
+  margin: 0 0 14px;
+}
+
+.immersive-frame__desc {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.75);
+  white-space: pre-line;
+  margin: 0;
+  max-width: 520px;
+}
+
+/* ── CTA frame ────────────────────────────────────────── */
+
+.immersive-frame--cta {
+  background-color: #ffffff;
+  color: #1a1a1a;
+}
+
+.immersive-cta__cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.immersive-cta__heading {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: rgba(26, 26, 26, 0.45);
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════ */
+
+@media (max-width: 1280px) {
+  .immersive-page {
+    --page-gutter: 60px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .immersive-page {
+    --page-gutter: 40px;
+  }
+
+  .immersive-intro__inner {
+    padding-top: 80px;
+  }
+
+  .immersive-frame__cap {
+    height: 65vh;
+  }
+
+  .immersive-frame__cap--top {
+    top: -45vh;
+  }
+
+  .immersive-frame__cap--bottom {
+    bottom: -45vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .immersive-page {
+    --page-gutter: 24px;
+  }
+
+  .immersive-intro__title {
+    font-size: clamp(2.4rem, 12vw, 4rem);
+  }
+
+  .immersive-intro__copy-cell {
+    margin-top: 48px;
+  }
+
+  .immersive-frame__cap {
+    height: 55vh;
+  }
+
+  .immersive-frame__cap--top {
+    top: -38vh;
+  }
+
+  .immersive-frame__cap--bottom {
+    bottom: -38vh;
+  }
+
+  .immersive-frame__title {
+    font-size: 1.4rem;
+  }
+
+  .immersive-frame__desc {
+    font-size: 13px;
+    padding: 0 16px;
+  }
+
+  .immersive-cta__heading {
+    font-size: clamp(1.6rem, 6vw, 2.4rem);
+  }
+}

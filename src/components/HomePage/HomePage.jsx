@@ -154,6 +154,9 @@ export default function HomePage() {
   const showcaseVideoRef = useRef(null);
   const showcaseCanvasRef = useRef(null);
   const showcaseSectionRef = useRef(null);
+  const skipCursorRef = useRef(null);
+  const skipRingRef = useRef(null);
+  const [skipCursorVisible, setSkipCursorVisible] = useState(false);
 
   // ── Preloader state (declared early so hero entrance can depend on it) ──
   const [loading, setLoading] = useState(true);
@@ -321,6 +324,64 @@ export default function HomePage() {
     };
   }, []);
 
+  // Skip cursor — circular ring around a custom cursor that fills as the user
+  // scrolls through the showcase-video section. The ring uses stroke-dashoffset
+  // (circumference 2πr = 2π·28 ≈ 175.93). Progress 0 → fully empty, 1 → full.
+  useEffect(() => {
+    const section = showcaseSectionRef.current;
+    const ring = skipRingRef.current;
+    if (!section || !ring) return;
+
+    const CIRC = 2 * Math.PI * 32;
+    ring.style.strokeDasharray = String(CIRC);
+
+    let ticking = false;
+    const update = () => {
+      ticking = false;
+      const rect = section.getBoundingClientRect();
+      const range = section.offsetHeight - window.innerHeight;
+      const raw = -rect.top / range;
+      const progress = Math.min(Math.max(raw, 0), 1);
+      ring.style.strokeDashoffset = String(CIRC * (1 - progress));
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    update();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Move the skip cursor with the mouse while inside the showcase section.
+  const onShowcaseMouseMove = (e) => {
+    const cursor = skipCursorRef.current;
+    if (!cursor) return;
+    cursor.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0) translate(-50%, -50%)`;
+  };
+
+  // Click skips past the showcase to the next section.
+  // The showcase is 2400vh (24 viewports) so we use a long duration and
+  // an ease-in-out cubic curve — fast in the middle, gentle at both ends —
+  // so the video reel doesn't strobe through frames at the start/finish.
+  const onSkipClick = () => {
+    const target = document.querySelector(".section-about");
+    if (!target) return;
+    const easeInOutCubic = (t) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const lenis = window["__lenis"];
+    if (lenis && typeof lenis.scrollTo === "function") {
+      lenis.scrollTo(target, {
+        duration: 2.4,
+        easing: easeInOutCubic,
+        lock: true,
+      });
+    } else {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   // Scroll-driven gradient reveal — clip tracks the partner-content top edge
   useEffect(() => {
     const gradient = gradientRef.current;
@@ -385,94 +446,7 @@ export default function HomePage() {
     return () => observer.disconnect();
   }, []);
 
-  // Same parallax pattern for the Team section: team__top and team__photo-wrapper
-  // both rise from below, settle at natural position, then drift upward.
-  // ResizeObserver handles the image-load layout shift in team__photo-wrapper.
-  useEffect(() => {
-    const teamLabel = teamLabelRef.current;
-    const teamTop = teamTopRef.current;
-    if (!teamLabel || !teamTop) return;
-
-    const setupParallax = (element, { enterDistance = 320, driftDistance = 200 } = {}) => {
-      let elPageY = 0;
-      let elH = 0;
-
-      const measure = () => {
-        element.style.transform = "none";
-        const r = element.getBoundingClientRect();
-        elPageY = r.top + window.scrollY;
-        elH = r.height;
-      };
-      measure();
-
-      let ticking = false;
-      const onScroll = () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const scrollY = window.scrollY;
-          const vh = window.innerHeight;
-          const elTop = elPageY - scrollY;
-
-          const raw = (vh - elTop) / (vh + elH);
-          const progress = Math.min(Math.max(raw, 0), 1);
-
-          let y;
-          let opacity;
-
-          if (progress < 0.5) {
-            const p = progress * 2;
-            const eased = 1 - Math.pow(1 - p, 3);
-            y = (1 - eased) * enterDistance;
-            opacity = Math.min(eased * 1.3, 1);
-          } else {
-            const p = (progress - 0.5) * 2;
-            y = -p * driftDistance;
-            opacity = 1;
-          }
-
-          element.style.transform = `translate3d(0, ${y}px, 0)`;
-          element.style.opacity = opacity;
-          ticking = false;
-        });
-      };
-
-      const onResize = () => {
-        measure();
-        onScroll();
-      };
-
-      // Re-measure when the element itself changes size (e.g. image load)
-      const ro = new ResizeObserver(() => {
-        measure();
-        onScroll();
-      });
-      ro.observe(element);
-
-      window.addEventListener("scroll", onScroll, { passive: true });
-      window.addEventListener("resize", onResize);
-      onScroll();
-
-      return () => {
-        window.removeEventListener("scroll", onScroll);
-        window.removeEventListener("resize", onResize);
-        ro.disconnect();
-      };
-    };
-
-    const cleanupLabel = setupParallax(teamLabel, { enterDistance: 220, driftDistance: 120 });
-    const cleanupTop = setupParallax(teamTop, { enterDistance: 280, driftDistance: 150 });
-    // No vertical parallax on the photo wrapper — it's `position: sticky`
-    // and gets pinned during the scroll-jacked horizontal pan instead.
-    // A transform here would break sticky positioning.
-
-    return () => {
-      cleanupLabel();
-      cleanupTop();
-    };
-  }, []);
-
-  // Team photo horizontal pan — scroll-driven.
+// Team photo horizontal pan — scroll-driven.
   // The sticky wrapper stays pinned while the user scrolls through the
   // pin container. Scroll progress maps proportionally to the horizontal
   // pan with smooth lerp interpolation. No scroll-jacking, no Lenis
@@ -959,10 +933,26 @@ export default function HomePage() {
             </h2>
           </GridItem>
         </Grid>
+        <div className="touch__scroll-cue" aria-hidden="true">
+          <div className="scroll-cue__mouse">
+            <span className="scroll-cue__wheel" />
+          </div>
+          <span className="scroll-cue__label">Scroll to Explore</span>
+        </div>
       </section>
 
       {/* ═══ Showcase Video Section — scroll-driven playback ═══ */}
-      <section ref={showcaseSectionRef} className="showcase-video">
+      <section
+        ref={showcaseSectionRef}
+        className={`showcase-video${skipCursorVisible ? " showcase-video--cursor-hidden" : ""}`}
+        onMouseEnter={(e) => {
+          onShowcaseMouseMove(e);
+          setSkipCursorVisible(true);
+        }}
+        onMouseLeave={() => setSkipCursorVisible(false)}
+        onMouseMove={onShowcaseMouseMove}
+        onClick={onSkipClick}
+      >
         <div className="showcase-video__sticky">
           <canvas ref={showcaseCanvasRef} className="showcase-video__player" />
           <video
@@ -974,6 +964,17 @@ export default function HomePage() {
             style={{ display: "none" }}
           />
           <div className="showcase-video__overlay"></div>
+          <div
+            ref={skipCursorRef}
+            className={`skip-cursor${skipCursorVisible ? " skip-cursor--visible" : ""}`}
+            aria-hidden="true"
+          >
+            <svg className="skip-cursor__svg" viewBox="0 0 64 64" width="64" height="64">
+              <circle className="skip-cursor__track" cx="32" cy="32" r="32" />
+              <circle ref={skipRingRef} className="skip-cursor__ring" cx="32" cy="32" r="32" />
+            </svg>
+            <span className="skip-cursor__label">Skip</span>
+          </div>
           <AnimatePresence mode="wait">
             {activeLegend && (
               <motion.div
@@ -1004,7 +1005,11 @@ export default function HomePage() {
           <GridItem span={{ base: 4, md: 3, lg: 4 }} className="about__left">
             <span className="about__label">Who We Are</span>
           </GridItem>
-          <GridItem span={{ base: 4, md: 5, lg: 8 }} className="about__right">
+          <GridItem
+            span={{ base: 4, md: 4, lg: 6 }}
+            start={{ md: 5, lg: 7 }}
+            className="about__right"
+          >
             <h2 className="about__heading">
               We are a tech-driven, creativity-led{" "}
               <span className="about__heading-accent">phygital experience design</span>{" "}
@@ -1198,25 +1203,29 @@ export default function HomePage() {
         </Grid>
 
         <Grid className="blog__cards">
-          {[
-            { src: "/images/community_1.webp" },
-            { src: "/images/community_2.webp" },
-            { src: "/images/community_3.webp" },
-          ].map((card) => (
-            <GridItem key={card.src} span={{ base: 4, md: 8, lg: 4 }} as="article" className="blog__card">
-              <img className="blog__card-bg" src={card.src} alt="" loading="lazy" />
-              <div className="blog__card-blur"></div>
-              <div className="blog__card-content">
-                <h3 className="blog__card-title">
-                  Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
-                </h3>
-                <div className="blog__card-bottom">
-                  <span>6 min</span>
-                  <p>Real Estate, Experience Centre</p>
-                </div>
-              </div>
-            </GridItem>
-          ))}
+          <GridItem span={12} className="blog__cards-cell">
+            <div className="blog__cards-row">
+              {[
+                { src: "/images/community_1.webp" },
+                { src: "/images/community_2.webp" },
+                { src: "/images/community_3.webp" },
+              ].map((card) => (
+                <article key={card.src} className="blog__card">
+                  <img className="blog__card-bg" src={card.src} alt="" loading="lazy" />
+                  <div className="blog__card-blur"></div>
+                  <div className="blog__card-content">
+                    <h3 className="blog__card-title">
+                      Inside Bvlgari Residences: An Experience Centre for Dubai&apos;s Most Discerning
+                    </h3>
+                    <div className="blog__card-bottom">
+                      <span>6 min</span>
+                      <p>Real Estate, Experience Centre</p>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </GridItem>
         </Grid>
       </section>
 

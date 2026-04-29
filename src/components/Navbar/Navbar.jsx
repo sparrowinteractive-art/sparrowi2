@@ -82,7 +82,7 @@ export default function Navbar({ logoVisible = true }) {
         {mode === "full" && (
           <motion.nav
             key="full"
-            className="navbar navbar--full"
+            className={`navbar navbar--full${onLight ? " navbar--on-light" : ""}`}
             initial={{ y: "-100%" }}
             animate={{ y: 0 }}
             exit={{ y: "-100%" }}

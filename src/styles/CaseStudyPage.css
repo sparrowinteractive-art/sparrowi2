@@ -1,0 +1,814 @@
+/* ═══════════════════════════════════════════════════════
+   CaseStudyPage — /case-studies/[slug]
+   Structure modelled on exoape.com/work/[project]: full-bleed hero,
+   intro/meta, parallax bleeds, two-col, sticky-pin, mosaic, wide,
+   quote, marquee, credits, next-project. Theme is the cream-and-ink
+   palette shared with ExperienceCentresPage so the case-study reads
+   as a continuation of the gallery.
+   ═══════════════════════════════════════════════════════ */
+
+.cs-page {
+  --page-gutter: max(80px, calc((100vw - 1400px) / 2));
+  --cs-ink: #131313;
+  --cs-paper: #f5f3ee;
+  --cs-mute: rgba(19, 19, 19, 0.55);
+  --cs-line: rgba(19, 19, 19, 0.12);
+  --cs-accent: #c9421a;
+  width: 100%;
+  background-color: var(--cs-paper);
+  color: var(--cs-ink);
+  overflow-x: clip;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+}
+
+/* Reveal line — wraps a span around inline content. The inner element
+   slides up from below the clip. Used by RevealLines for line-by-line
+   typography reveals. */
+.cs-reveal-line {
+  display: block;
+  overflow: hidden;
+  line-height: 1.05;
+  padding-bottom: 0.06em;
+}
+
+.cs-reveal-line__inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* ── Hero ─────────────────────────────────────────────── */
+.cs-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 640px;
+  overflow: hidden;
+  background-color: #0c0c0c;
+  color: #f5f3ee;
+}
+
+.cs-hero__image {
+  position: absolute;
+  /* oversize so parallax y-translate never reveals page bg */
+  top: -10%;
+  left: 0;
+  width: 100%;
+  height: 120%;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+  z-index: 0;
+}
+
+.cs-hero__veil {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.28) 0%, transparent 25%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.55) 0%, transparent 45%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.cs-hero__top {
+  position: absolute;
+  top: clamp(120px, 18vh, 160px);
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.cs-hero__top-right {
+  text-align: right;
+}
+
+.cs-hero__label,
+.cs-hero__year {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.7);
+}
+
+.cs-hero__title-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+  will-change: transform;
+}
+
+.cs-hero__title {
+  font-size: clamp(3.6rem, 11vw, 12rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+  color: #f5f3ee;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.cs-hero__title-sub {
+  font-style: italic;
+  color: #d97553;
+  margin-left: clamp(20px, 4vw, 80px);
+  font-size: 0.85em;
+}
+
+.cs-hero__bottom {
+  position: absolute;
+  bottom: clamp(28px, 5vh, 56px);
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.cs-hero__meta-key {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.55);
+  margin-bottom: 6px;
+}
+
+.cs-hero__meta-val {
+  display: block;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: #f5f3ee;
+}
+
+.cs-hero__bottom-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cs-hero__scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.7);
+}
+
+.cs-hero__scroll-line {
+  display: inline-block;
+  width: 60px;
+  height: 1px;
+  background: rgba(245, 243, 238, 0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-hero__scroll-line::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -50%;
+  width: 50%;
+  height: 100%;
+  background: #f5f3ee;
+  animation: csScrollLine 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes csScrollLine {
+  0%   { left: -50%; }
+  100% { left: 100%; }
+}
+
+/* ── Intro ────────────────────────────────────────────── */
+.cs-intro {
+  width: 100%;
+  padding: clamp(120px, 18vh, 200px) 0 clamp(80px, 14vh, 160px);
+}
+
+.cs-intro__meta-cell {
+  position: relative;
+  padding-top: 8px;
+}
+
+.cs-intro__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  border-top: 1px solid var(--cs-line);
+  padding-top: 24px;
+}
+
+.cs-intro__row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.cs-intro__meta-key {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+}
+
+.cs-intro__meta-val {
+  font-size: 14px;
+  color: var(--cs-ink);
+}
+
+.cs-intro__copy-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.cs-intro__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+}
+
+.cs-intro__lede {
+  font-size: clamp(1.6rem, 3.4vw, 2.8rem);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+  color: var(--cs-ink);
+  margin: 0;
+}
+
+.cs-intro__body {
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.65;
+  color: var(--cs-mute);
+  margin: 0;
+  max-width: 56ch;
+}
+
+/* ── Parallax full-bleed ──────────────────────────────── */
+.cs-bleed {
+  position: relative;
+  width: 100%;
+  height: clamp(420px, 80vh, 760px);
+  overflow: hidden;
+  margin: clamp(40px, 8vh, 100px) 0;
+}
+
+.cs-bleed__image {
+  position: absolute;
+  /* y-translate range is ±strength% — overscan prevents edge gaps */
+  top: -15%;
+  left: 0;
+  width: 100%;
+  height: 130%;
+  background-size: cover;
+  background-position: center;
+  will-change: transform;
+}
+
+/* ── Two-column ───────────────────────────────────────── */
+.cs-twocol {
+  width: 100%;
+  padding: clamp(60px, 10vh, 120px) 0;
+}
+
+.cs-twocol__media-cell {
+  display: flex;
+  align-items: stretch;
+}
+
+.cs-twocol__media {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-size: cover;
+  background-position: center;
+  background-color: #d9d3c8;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.cs-twocol__caption {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 8px 14px;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  background: rgba(245, 243, 238, 0.92);
+  color: var(--cs-ink);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.cs-twocol__copy-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
+}
+
+.cs-twocol__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+}
+
+.cs-twocol__heading {
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--cs-ink);
+}
+
+.cs-twocol__body {
+  font-size: clamp(15px, 1.05vw, 16px);
+  line-height: 1.65;
+  color: var(--cs-mute);
+  margin: 0;
+  max-width: 48ch;
+}
+
+/* ── Sticky pin ───────────────────────────────────────── */
+.cs-pin {
+  width: 100%;
+  padding: clamp(60px, 10vh, 120px) 0 clamp(40px, 8vh, 100px);
+  position: relative;
+}
+
+.cs-pin__text-cell {
+  position: relative;
+}
+
+.cs-pin__sticky {
+  position: sticky;
+  top: clamp(120px, 18vh, 180px);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding-right: clamp(0px, 2vw, 40px);
+}
+
+.cs-pin__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+}
+
+.cs-pin__heading {
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: var(--cs-ink);
+}
+
+.cs-pin__body {
+  font-size: clamp(15px, 1.05vw, 16px);
+  line-height: 1.65;
+  color: var(--cs-mute);
+  margin: 0;
+  max-width: 44ch;
+}
+
+.cs-pin__images-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.cs-pin__images {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(40px, 8vh, 80px);
+}
+
+.cs-pin__image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background-size: cover;
+  background-position: center;
+  background-color: #d9d3c8;
+}
+
+/* ── Mosaic ───────────────────────────────────────────── */
+.cs-mosaic {
+  width: 100%;
+  padding: clamp(60px, 10vh, 120px) 0;
+}
+
+.cs-mosaic__grid {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 clamp(16px, 4vw, 48px);
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(16px, 2.5vw, 32px);
+}
+
+.cs-mosaic__item {
+  background-size: cover;
+  background-position: center;
+  background-color: #d9d3c8;
+  margin: 0;
+}
+
+.cs-mosaic__item--tall {
+  grid-column: span 6;
+  aspect-ratio: 3 / 4;
+}
+
+.cs-mosaic__item--wide {
+  grid-column: span 6;
+  aspect-ratio: 4 / 3;
+  align-self: center;
+}
+
+.cs-mosaic__item--square {
+  grid-column: span 6;
+  aspect-ratio: 1 / 1;
+}
+
+/* Stagger every other tall item slightly to create offset rhythm
+   without requiring a JS-driven masonry. Pure visual sweetener. */
+.cs-mosaic__item:nth-child(even) {
+  margin-top: clamp(20px, 6vh, 80px);
+}
+
+/* ── Wide image + caption ─────────────────────────────── */
+.cs-wide {
+  width: 100%;
+  padding: 0 0 clamp(60px, 10vh, 120px);
+}
+
+.cs-wide__caption {
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+  margin: -40px 0 0;
+}
+
+/* ── Pull quote ──────────────────────────────────────── */
+.cs-quote {
+  width: 100%;
+  padding: clamp(80px, 14vh, 160px) 0 clamp(60px, 10vh, 120px);
+  text-align: center;
+}
+
+.cs-quote__body {
+  font-size: clamp(1.6rem, 3.4vw, 2.8rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  margin: 0 0 32px;
+  color: var(--cs-ink);
+  text-align: center;
+}
+
+.cs-quote__cite {
+  display: block;
+  font-style: normal;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+}
+
+/* ── Marquee ─────────────────────────────────────────── */
+.cs-marquee {
+  width: 100%;
+  background-color: var(--cs-ink);
+  color: #f5f3ee;
+  overflow: hidden;
+  padding: clamp(28px, 5vh, 48px) 0;
+  border-top: 1px solid rgba(245, 243, 238, 0.06);
+  border-bottom: 1px solid rgba(245, 243, 238, 0.06);
+}
+
+.cs-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: csMarquee 40s linear infinite;
+  will-change: transform;
+}
+
+.cs-marquee__item {
+  font-size: clamp(2.2rem, 6vw, 5rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  padding: 0 clamp(24px, 3vw, 48px);
+  white-space: nowrap;
+  font-style: italic;
+  color: #f5f3ee;
+}
+
+.cs-marquee__item:nth-child(even) {
+  font-style: normal;
+  color: rgba(245, 243, 238, 0.55);
+}
+
+@keyframes csMarquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Credits ─────────────────────────────────────────── */
+.cs-credits {
+  width: 100%;
+  padding: clamp(80px, 14vh, 160px) 0 clamp(60px, 10vh, 120px);
+}
+
+.cs-credits__eyebrow {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--cs-mute);
+  margin-bottom: 32px;
+}
+
+.cs-credits__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--cs-line);
+}
+
+.cs-credits__row {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 20px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--cs-line);
+  font-size: clamp(15px, 1.1vw, 18px);
+  line-height: 1.4;
+}
+
+.cs-credits__role {
+  color: var(--cs-mute);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  padding-top: 4px;
+}
+
+.cs-credits__names {
+  color: var(--cs-ink);
+}
+
+/* ── Next project ────────────────────────────────────── */
+.cs-next {
+  position: relative;
+  width: 100%;
+  background-color: #0c0c0c;
+  color: #f5f3ee;
+  padding: clamp(120px, 22vh, 240px) 0 clamp(120px, 22vh, 240px);
+  overflow: hidden;
+  cursor: none; /* fall back gracefully if the device has no pointer */
+}
+
+.cs-next__link {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+}
+
+.cs-next__inner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(24px, 4vh, 40px);
+  text-align: center;
+}
+
+.cs-next__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.55);
+}
+
+.cs-next__title {
+  font-size: clamp(3rem, 9vw, 9rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: letter-spacing 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cs-next__name {
+  display: block;
+  color: #f5f3ee;
+}
+
+.cs-next__subtitle {
+  display: block;
+  font-style: italic;
+  color: #d97553;
+  font-size: 0.6em;
+}
+
+.cs-next__link:hover .cs-next__title {
+  letter-spacing: -0.02em;
+}
+
+.cs-next__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(245, 243, 238, 0.65);
+  padding-top: 8px;
+  border-top: 1px solid rgba(245, 243, 238, 0.18);
+  transition: color 0.4s ease, border-color 0.4s ease;
+}
+
+.cs-next__link:hover .cs-next__cta {
+  color: #f5f3ee;
+  border-color: rgba(245, 243, 238, 0.6);
+}
+
+.cs-next__arrow {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cs-next__link:hover .cs-next__arrow {
+  transform: translateX(8px);
+}
+
+/* Cursor-tracked image preview — pinned to top-left of the link, then
+   translated by motion x/y values. translate(-50%, -50%) recentres
+   it on the cursor so the spring origin is correct. */
+.cs-next__preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: clamp(220px, 24vw, 360px);
+  aspect-ratio: 4 / 5;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+  z-index: 1;
+  transform-origin: center center;
+  /* Centre the preview on the cursor — combined with x/y motion values */
+  margin-left: clamp(-180px, -12vw, -110px);
+  margin-top: clamp(-220px, -15vw, -150px);
+  will-change: transform, opacity;
+  filter: saturate(0.95);
+}
+
+/* ── Responsive ──────────────────────────────────────── */
+@media (max-width: 1280px) {
+  .cs-page { --page-gutter: 60px; }
+}
+
+@media (max-width: 1024px) {
+  .cs-page { --page-gutter: 40px; }
+
+  .cs-hero__title-sub {
+    margin-left: clamp(12px, 3vw, 40px);
+  }
+
+  .cs-intro__copy-cell {
+    margin-top: 32px;
+  }
+
+  .cs-mosaic__item--tall,
+  .cs-mosaic__item--wide,
+  .cs-mosaic__item--square {
+    grid-column: span 12;
+  }
+
+  .cs-mosaic__item:nth-child(even) {
+    margin-top: 0;
+  }
+
+  .cs-credits__row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .cs-next__preview {
+    display: none; /* touch devices have no cursor */
+  }
+
+  .cs-next {
+    cursor: pointer;
+  }
+}
+
+@media (max-width: 768px) {
+  .cs-page { --page-gutter: 24px; }
+
+  .cs-hero {
+    height: 90vh;
+    height: 90dvh;
+    min-height: 520px;
+  }
+
+  .cs-hero__title {
+    font-size: clamp(2.6rem, 14vw, 4.4rem);
+  }
+
+  .cs-hero__bottom-right {
+    display: none;
+  }
+
+  .cs-intro {
+    padding: 80px 0 60px;
+  }
+
+  .cs-intro__lede {
+    font-size: clamp(1.4rem, 6vw, 2rem);
+  }
+
+  .cs-bleed {
+    height: 50vh;
+    margin: 40px 0;
+  }
+
+  .cs-twocol {
+    padding: 60px 0;
+  }
+
+  .cs-twocol__copy-cell {
+    margin-top: 32px;
+  }
+
+  .cs-pin__sticky {
+    position: relative;
+    top: 0;
+    margin-bottom: 40px;
+  }
+
+  .cs-mosaic__grid {
+    gap: 16px;
+  }
+
+  .cs-quote {
+    padding: 60px 0 40px;
+  }
+
+  .cs-marquee__item {
+    font-size: clamp(1.6rem, 9vw, 3rem);
+  }
+
+  .cs-credits {
+    padding: 80px 0 40px;
+  }
+
+  .cs-next {
+    padding: 100px 0;
+  }
+
+  .cs-next__title {
+    font-size: clamp(2.4rem, 14vw, 4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-marquee__track,
+  .cs-hero__scroll-line::after {
+    animation: none !important;
+  }
+  .cs-reveal-line__inner,
+  .cs-hero__image,
+  .cs-hero__title-wrap,
+  .cs-bleed__image,
+  .cs-twocol__media,
+  .cs-pin__image,
+  .cs-mosaic__item,
+  .cs-next__preview {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}

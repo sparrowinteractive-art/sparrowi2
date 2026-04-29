@@ -1,0 +1,261 @@
+/* ═══════════════════════════════════════════════════════
+   CareersPage — open-roles list with the same glass-pill
+   filter system as the Scale Model gallery. Mirrors the
+   HomePage / ImmersivePage shell (Navbar + Grid + Footer).
+   ═══════════════════════════════════════════════════════ */
+
+.careers-page {
+  --page-gutter: max(80px, calc((100vw - 1400px) / 2));
+  width: 100%;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  overflow-x: clip;
+}
+
+/* ── Hero ──────────────────────────────────────────────────
+   Full-viewport frame. Video fills the whole hero as the
+   background visual; "Join us." + lede sit as an overlay
+   centered horizontally, anchored to the lower portion of
+   the frame so the moss-sparrow text in the video reads
+   above them. */
+.careers-hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 640px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* Video sits in the upper ~72% of the hero so there's a clear breathing
+   gap between the moss-sparrow text and the "Join us." copy below. */
+.careers-hero__video-wrap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0%;
+  z-index: 0;
+  display: block;
+}
+
+.careers-hero__video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: transparent;
+}
+
+.careers-hero__copy {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(48px, 10vh, 120px);
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: clamp(12px, 4vh, 20px);
+  padding: 0 clamp(24px, 5vw, 80px);
+  width: 100%;
+  max-width: 1400px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.careers-hero__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 64px;
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.careers-hero__lede {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 18rempx;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.careers-hero__lede-accent {
+  background: linear-gradient(90deg, #FF01BB 24.04%, #0169E8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Jobs list ─────────────────────────────────────────── */
+.careers-jobs {
+  width: 100%;
+  /* Bottom padding gives the last row clearance under the floating
+     filter pill (same pattern as the Scale Model gallery). */
+  padding: clamp(40px, 6vh, 80px) 0 160px;
+}
+
+.careers-jobs__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(26, 26, 26, 0.12);
+}
+
+.careers-jobs__row {
+  border-bottom: 1px solid rgba(26, 26, 26, 0.12);
+  will-change: transform, opacity;
+}
+
+.careers-jobs__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: clamp(20px, 3vh, 32px) clamp(8px, 1.5vw, 16px);
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  isolation: isolate;
+  transition: padding 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* The hover wash — a tinted layer that fills in from left to right when
+   the row is hovered. Sits under the text via z-index so the role title
+   stays readable. */
+.careers-jobs__link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(26, 26, 26, 0.04) 0%,
+    rgba(26, 26, 26, 0.02) 100%
+  );
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+
+.careers-jobs__link:hover {
+  padding-left: clamp(20px, 2vw, 28px);
+}
+
+.careers-jobs__link:hover::before {
+  transform: scaleX(1);
+}
+
+.careers-jobs__link:focus-visible {
+  outline: 2px solid rgba(26, 26, 26, 0.4);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.careers-jobs__main {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.careers-jobs__role {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: clamp(1.4rem, 2.4vw, 2rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.careers-jobs__meta {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(26, 26, 26, 0.6);
+  letter-spacing: 0.01em;
+}
+
+.careers-jobs__dot {
+  color: rgba(26, 26, 26, 0.3);
+}
+
+.careers-jobs__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  flex-shrink: 0;
+}
+
+.careers-jobs__cta-label {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.careers-jobs__arrow {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.careers-jobs__link:hover .careers-jobs__arrow {
+  transform: translateX(8px);
+}
+
+.careers-jobs__link:hover .careers-jobs__cta-label {
+  transform: translateX(2px);
+}
+
+.careers-jobs__empty {
+  padding: clamp(32px, 5vh, 60px) 0;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 15px;
+  color: rgba(26, 26, 26, 0.6);
+  text-align: center;
+}
+
+.careers-jobs__empty-link {
+  margin-left: 6px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: #1a1a1a;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .careers-hero {
+    min-height: 560px;
+  }
+  .careers-hero__copy {
+    bottom: clamp(32px, 8vh, 80px);
+  }
+  .careers-hero__title {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+  .careers-hero__lede {
+    font-size: 1rem;
+  }
+  .careers-jobs__link {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .careers-jobs__cta {
+    align-self: flex-end;
+  }
+}

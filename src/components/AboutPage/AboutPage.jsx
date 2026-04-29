@@ -591,7 +591,15 @@ export default function AboutPage() {
         <h2 className="banner-text">AMAZE . DELIGHT . REPEAT</h2>
       </section>
 
-      <Footer />
+      <Footer
+        heroText={
+          <>
+            People First.<br />
+            Stories Always.<br />
+            Sparrow, Forever.
+          </>
+        }
+      />
     </div>
   );
 }

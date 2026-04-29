@@ -104,7 +104,7 @@
 }
 
 .navbar__logo img {
-  height: 32px;
+  height: 26px;
   width: auto;
   object-fit: contain;
 }
@@ -153,7 +153,8 @@
 
 /* ───── On-light mode (pill over white sections) ───── */
 
-.navbar--on-light .navbar__pill {
+.navbar--on-light .navbar__pill,
+.navbar--on-light .navbar__inner {
   background: hsla(0, 0%, 47%, 0.1);
 }
 
