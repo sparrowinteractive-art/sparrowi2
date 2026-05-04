@@ -21,6 +21,18 @@
   font-family: "Neue Montreal", "Inter", Arial, sans-serif;
 }
 
+/* Every page-level child paints in the positive z-index layer so the
+   fixed z:0 .footer_back stays hidden behind them, matching the homepage
+   footer-coverage pattern. <footer> is excluded so the Footer wrapper
+   stays in normal flow and its inner .footer_back keeps its root z:0.
+   :where() has zero specificity — sections that set their own bg or
+   z-index (e.g. .section-experience at z:3) override these defaults. */
+:where(.cs-page > *:not(footer):not(.section-experience)) {
+  position: relative;
+  z-index: 1;
+  background-color: var(--cs-paper);
+}
+
 /* Reveal line — wraps a span around inline content. The inner element
    slides up from below the clip. Used by RevealLines for line-by-line
    typography reveals. */

@@ -10,9 +10,28 @@
 .immersive-page {
   --page-gutter: max(80px, calc((100vw - 1400px) / 2));
   width: 100%;
-  background-color: #000;
+  /* No page-wrapper background — the html canvas (white) shows through
+     in any area not covered by a child section. .immersive-pin paints its
+     own #000 fill over the video area, and .section-experience covers its
+     own area, so removing this wrapper bg only changes one thing: the
+     footer's backdrop-filter at the bottom now blurs the white canvas
+     (matching the homepage look) instead of solid #000. */
   color: #fff;
   overflow-x: clip;
+}
+
+/* Footer-coverage layer — see HomePage / Footer.css. Page-level children
+   sit at z:1 with an opaque fill so the fixed z:0 .footer_back stays
+   hidden until .section-experience scrolls up at the bottom.
+   Excluded:
+   - <footer> (Footer wrapper must stay in normal flow so its inner
+     .footer_back keeps its root z:0 reveal mechanism)
+   - .section-experience (its 400px tail must remain transparent so the
+     footer reveals through it on scroll). */
+:where(.immersive-page > *:not(footer):not(.section-experience)) {
+  position: relative;
+  z-index: 1;
+  background-color: #000;
 }
 
 /* Common frame wrapper — every frame is exactly one viewport tall */
@@ -98,16 +117,75 @@
   }
 }
 
-/* ── Frame 1: Intro ───────────────────────────────────── */
+/* ── Phase 0: Intro overlay (glass + center-split reveal) ─────────────
+   Two half-width panels clipped to the left/right of the viewport.
+   Each renders the full intro layout but is masked to its own half via
+   clip-path, so when both halves slide outward on scroll they appear to
+   tear the screen open down the centre — revealing the curved-frame
+   video already playing behind them.
+   ───────────────────────────────────────────────────────────────────── */
+.immersive-intro-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
 
-.immersive-frame--intro {
-  background-color: #0a0a0a;
+.immersive-intro__half {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #0f0f0f;
+  will-change: transform;
+  transition: transform 60ms linear;
+}
+
+/* Each half is clipped to show only its side. The right half also gets
+   a hairline center seam so the split looks like two physical panels. */
+.immersive-intro__half--left {
+  clip-path: inset(0 50% 0 0);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.immersive-intro__half--right {
+  clip-path: inset(0 0 0 50%);
+  border-left: 1px solid rgba(31, 31, 31, 0.08);
 }
 
 .immersive-intro__inner {
   width: 100%;
+  height: 100%;
   padding-top: 96px;
+  display: flex;
+  align-items: center;
 }
+
+/* Hero text blur fade-in — staggered. The text is rendered inside both
+   halves; each clone runs the same animation in lockstep. */
+@keyframes immersiveBlurFadeIn {
+  from {
+    filter: blur(24px);
+    opacity: 0;
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+  }
+}
+
+.immersive-intro__title,
+.immersive-intro__lede,
+.immersive-intro__list li {
+  animation: immersiveBlurFadeIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.immersive-intro__title { animation-delay: 0.15s; }
+.immersive-intro__lede { animation-delay: 0.5s; }
+.immersive-intro__list li:nth-child(1) { animation-delay: 0.7s; }
+.immersive-intro__list li:nth-child(2) { animation-delay: 0.8s; }
+.immersive-intro__list li:nth-child(3) { animation-delay: 0.9s; }
+.immersive-intro__list li:nth-child(4) { animation-delay: 1.0s; }
+.immersive-intro__list li:nth-child(5) { animation-delay: 1.1s; }
 
 .immersive-intro__title-cell {
   display: flex;
@@ -120,8 +198,19 @@
   font-weight: 400;
   line-height: 1.0;
   letter-spacing: -0.03em;
-  color: rgba(255, 255, 255, 0.45);
   margin: 0;
+  /* Gradient transparency — text fades from opaque white at the top
+     to fully transparent at the bottom via background-clip: text. */
+  background: linear-gradient(
+    180deg,
+    rgba(39, 39, 39, 0.774) 0%,
+    rgba(255, 255, 255, 0.534) 60%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 
 .immersive-intro__copy-cell {
@@ -159,11 +248,11 @@
   color: rgba(255, 255, 255, 0.8);
 }
 
-/* ── Curved frames — image with elliptical black caps ── */
-
-.immersive-frame--curved {
-  /* The bg image lives on a child div so its filters don't fight with the caps */
-}
+/* ── Curved frames — image with elliptical black caps ──
+   The background image lives on a child .immersive-frame__bg div so the
+   bg's filters don't fight with the curved cap pseudo-elements. The
+   actual GPU-isolation rules for .immersive-frame--curved are further
+   down (paired with the sticky-stack rules). */
 
 .immersive-frame__bg {
   position: absolute;
@@ -210,7 +299,9 @@
    ──────────────────────────────────────────────────────────────────── */
 .immersive-pin {
   position: relative;
+  z-index: 1;
   width: 100%;
+  background-color: #000;
 }
 
 .immersive-pin__sticky {

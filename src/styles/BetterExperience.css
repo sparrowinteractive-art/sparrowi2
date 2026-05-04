@@ -1,0 +1,68 @@
+/* ═══════════════════════════════════════════════════════
+   BetterExperience — closing statement section.
+   Sits above the Footer; opaque white panel that covers
+   the footer's fixed bottom overlay until it scrolls up.
+   ═══════════════════════════════════════════════════════ */
+
+.section-experience {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  /* Total height = visible panel (100vh) + tail equal to .footer_back's
+     actual rendered height (set as --footer-back-h by BetterExperience.jsx).
+     The tail gives the user enough scroll past the panel to drive the
+     .footer_back rise-over animation. */
+  height: calc(100vh + var(--footer-back-h, 400px));
+}
+
+.section-experience__panel {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.section-experience__text {
+  position: relative;
+  z-index: 1;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 90px;
+  font-weight: 500;
+  color: rgba(99, 99, 99, 0.25);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin: 0;
+  mix-blend-mode: luminosity;
+  top: -250px;
+}
+
+@media (max-width: 1024px) {
+  .section-experience__text {
+    font-size: 60px;
+    top: -150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-experience {
+    height: calc(60vh + var(--footer-back-h, 400px));
+  }
+
+  .section-experience__panel {
+    height: 60vh;
+  }
+
+  .section-experience__text {
+    font-size: 44px;
+    top: -80px;
+  }
+}
+
+@media (max-width: 480px) {
+  .section-experience__text {
+    font-size: 36px;
+    top: -40px;
+  }
+}

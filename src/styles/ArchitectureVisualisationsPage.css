@@ -1,0 +1,607 @@
+/* ═══════════════════════════════════════════════════════
+   ArchitectureVisualisationsPage — God's View gallery + floating filter
+   Page mirrors HomePage / ImmersivePage shell (Navbar + Grid + Footer).
+   ═══════════════════════════════════════════════════════ */
+
+.arch-viz-page {
+  --page-gutter: max(80px, calc((100vw - 1400px) / 2));
+  width: 100%;
+  background-color: #ffffff;
+  color: #1a1a1a;
+  overflow-x: clip;
+}
+
+/* ── Hero ──────────────────────────────────────────────── */
+.arch-viz-hero {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  width: 100%;
+  padding: clamp(120px, 18vh, 200px) 0 clamp(60px, 10vh, 120px);
+}
+
+.arch-viz-hero__title-cell {
+  display: flex;
+  align-items: flex-start;
+}
+
+.arch-viz-hero__title {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 90px;
+  font-weight: 500;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.arch-viz-hero__copy-cell {
+  align-self: end;
+}
+
+.arch-viz-hero__lede {
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+/* ── Gallery ──────────────────────────────────────────── */
+.arch-viz-gallery {
+  position: relative;
+  z-index: 1;
+  background-color: #ffffff;
+  width: 100%;
+  /* Bottom padding gives the last row of cards clearance under the
+     fixed filter island so cards aren't hidden behind the pill. */
+  padding: clamp(40px, 6vh, 80px) 0 160px;
+}
+
+.arch-viz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  cursor: pointer;
+  will-change: transform, opacity;
+}
+
+.arch-viz-card__media {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  border-radius: 0;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    #d9d9d9 0%,
+    #f0f0f0 45%,
+    #c8c8c8 100%
+  );
+}
+
+/* Image layer — scales on hover while parent clips to square frame
+   (mirrors .blog__card-bg behavior on HomePage). */
+.arch-viz-card__media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: var(--bg-image);
+  background-size: cover;
+  background-position: center;
+  transform: scale(1);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.arch-viz-card:hover .arch-viz-card__media::before {
+  transform: scale(1.06);
+}
+
+.arch-viz-card__media::after {
+  /* Subtle inner highlight to give depth to placeholder gradient */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 30% 20%,
+    rgba(255, 255, 255, 0.35) 0%,
+    transparent 55%
+  );
+  pointer-events: none;
+}
+
+.arch-viz-card__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 16px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(26, 26, 26, 0.4);
+  text-transform: uppercase;
+}
+
+/* Walkthrough variant — 2-column video tiles. The card overrides the
+   square aspect ratio for a wider 16:9 frame and skips the radial
+   highlight + scale-on-hover gradient since the video carries the
+   visual weight. */
+.arch-viz-card--video .arch-viz-card__media {
+  aspect-ratio: 16 / 9;
+  cursor: default;
+  background: #000;
+}
+
+.arch-viz-card--video .arch-viz-card__media::before,
+.arch-viz-card--video .arch-viz-card__media::after {
+  content: none;
+}
+
+.arch-viz-card__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+
+.arch-viz-card__caption {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1a1a1a;
+}
+
+.arch-viz-card__name {
+  font-weight: 600;
+}
+
+.arch-viz-card__sep {
+  color: rgba(26, 26, 26, 0.4);
+  font-weight: 400;
+}
+
+.arch-viz-card__loc {
+  font-weight: 400;
+  color: rgba(26, 26, 26, 0.7);
+}
+
+/* ── Lightbox modal ───────────────────────────────────── */
+/* Full-page backdrop with the magnified hero image at the top and a
+   scrollable column of related images underneath. Click the backdrop,
+   the × button, or press ESC to close. */
+.arch-viz-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
+  /* Stop wheel/touch scroll from chaining into the page underneath when
+     the user reaches the top/bottom of the modal content. */
+  overscroll-behavior: contain;
+  /* Block layout (not flex). Flex + overflow-y:auto can clip the bottom
+     padding/content of a tall flex child in some browsers — switching to
+     block flow with margin:auto on the inner avoids that. */
+  padding: clamp(40px, 6vh, 80px) clamp(16px, 4vw, 60px)
+    clamp(80px, 14vh, 160px);
+}
+
+.arch-viz-modal__inner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  color: #ffffff;
+}
+
+/* The bounce wrapper holds all visible content; its y is driven by
+   framer-motion controls when the user overscrolls past the bottom. */
+.arch-viz-modal__bounce {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(20px, 3vh, 36px);
+  will-change: transform;
+}
+
+/* Close button — lives inside the carousel stage gutter, top-right.
+   Vertically aligned with .arch-viz-carousel__btn--next (same right:0).
+   Default: white text on transparent bg. Hover/focus/active: white on
+   solid black, per the requested state swap. */
+.arch-viz-modal__close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, transform 0.25s ease;
+}
+
+.arch-viz-modal__close:hover,
+.arch-viz-modal__close:focus-visible,
+.arch-viz-modal__close:active {
+  background: #000000;
+  color: #ffffff;
+  border-color: #000000;
+  transform: scale(1.05);
+  outline: none;
+}
+
+.arch-viz-modal__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
+  /* Match the carousel stage / thumbs gutter so the title + location
+     sit on the same x-axis as the image left/right edges. */
+  padding: 0 56px;
+}
+
+.arch-viz-modal__title {
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.arch-viz-modal__loc {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── Modal carousel + thumbnails ──────────────────────────────────────
+   Replaces the old .__main + .__related grid. Modeled on
+   21st.dev/community/components/ui-layouts/framer-thumbnail-carousel:
+   draggable horizontal track that snaps to the active index, with a
+   thumbnail strip below that expands the active thumb and collapses
+   the rest. Thumb strip auto-scrolls so the active is centred.
+   ──────────────────────────────────────────────────────────────────── */
+.arch-viz-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* Stage = positioning context for prev/next/close. Side padding leaves
+   room for the buttons in the gutters so they sit OUTSIDE the image
+   instead of overlaying it. Padding is L/R only, so the stage's height
+   matches the viewport — top:50% on the buttons resolves to the image
+   centre, top:0 on close to the image's top edge. */
+.arch-viz-carousel__stage {
+  position: relative;
+  padding: 0 56px;
+}
+
+.arch-viz-carousel__viewport {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  /* Cap height so the thumbnails stay reachable without huge scrolls
+     on tall viewports — same rationale as the old .__main rule. */
+  max-height: 75vh;
+}
+
+.arch-viz-carousel__track {
+  display: flex;
+  width: 100%;
+  cursor: grab;
+  touch-action: pan-y;
+  /* will-change hints the compositor; framer-motion drives x via
+     transform so paint cost stays predictable on long swipes. */
+  will-change: transform;
+}
+
+.arch-viz-carousel__track:active {
+  cursor: grabbing;
+}
+
+.arch-viz-carousel__slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: clamp(320px, 60vh, 640px);
+  overflow: hidden;
+}
+
+.arch-viz-carousel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+
+.arch-viz-carousel__btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  z-index: 2;
+  opacity: 0.7;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.arch-viz-carousel__btn:hover:not(:disabled) {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.arch-viz-carousel__btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.arch-viz-carousel__btn--prev {
+  left: 0;
+}
+
+.arch-viz-carousel__btn--next {
+  right: 0;
+}
+
+.arch-viz-carousel__btn svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* Thumbnail strip — width-only animation per active state. The strip
+   itself scrolls horizontally; the embedded scrollTo() keeps the
+   active thumb centred. Side padding matches the carousel stage so
+   the visible track aligns with the image's left/right edges. */
+.arch-viz-thumbs {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 0 56px;
+}
+
+.arch-viz-thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.arch-viz-thumbs__track {
+  display: flex;
+  gap: 2px;
+  height: 80px;
+  padding-bottom: 8px;
+  width: fit-content;
+}
+
+.arch-viz-thumbs__btn {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 4px;
+}
+
+.arch-viz-thumbs__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  pointer-events: none;
+  display: block;
+}
+
+/* ── Floating filter island ─────────────────────────────────────────
+   Glass pill modeled on augen.pro's .nav-list. Wrapper handles
+   positioning + show/hide; .__pill carries the visual styling.
+   ────────────────────────────────────────────────────────────────── */
+.arch-viz-filter {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 900;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.arch-viz-filter--hidden {
+  opacity: 0;
+  transform: translateX(-50%) translateY(24px);
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Filter pill — text-only, works on any background.
+   The dark self-tint on the pill provides the readable surface; the
+   buttons themselves are pure typography (14px / 400) with color-only
+   state changes. No strokes, no chip backgrounds, no extra shapes.
+   ───────────────────────────────────────────────────────────────────── */
+.arch-viz-filter__pill {
+  display: inline-flex;
+  align-items: center;
+  column-gap: 50px;
+  height: 45px;
+  padding: 0 30px;
+  border-radius: 30px;
+  background-color: rgba(0, 0, 0, 0.45);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%);
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* "FILTER" — heading + reset button. Same typography as the category
+   buttons (14px / 400), white, click resets the filter to "all". */
+.arch-viz-filter__heading {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  font: 400 14px/1.2 "Neue Montreal", "Inter", Arial, sans-serif;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 0.25s ease;
+}
+
+.arch-viz-filter__heading:focus-visible {
+  outline: none;
+}
+
+.arch-viz-filter__btn {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  font: 400 14px/1.2 "Neue Montreal", "Inter", Arial, sans-serif;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Default — every label (FILTER heading + the four categories) reads as
+   light grey. The single "active" item (whichever has --active applied)
+   gets bumped back to white below. So at any moment, exactly ONE label
+   is white and the rest are grey — including the categories when FILTER
+   itself is the active state. */
+.arch-viz-filter__heading,
+.arch-viz-filter__btn {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* The currently-selected item — FILTER when activeFilter === "all", or
+   the matching category when one is picked — is the only white label. */
+.arch-viz-filter__heading--active,
+.arch-viz-filter__btn--active {
+  color: #ffffff;
+}
+
+/* Hover preview — moving the cursor onto any label promotes it to white.
+   When the hovered item is different from the locked active one, the
+   :has() rules below override the active rule so only the HOVERED label
+   stays white at that moment. */
+.arch-viz-filter__heading:hover,
+.arch-viz-filter__btn:hover {
+  color: #ffffff;
+}
+
+/* While any label inside the pill is being hovered, every NON-hovered
+   label (including the active one) fades to grey. Result: exactly the
+   hovered label is white; everything else is uniformly light grey.
+   :has() — modern browsers only. */
+.arch-viz-filter__pill:has(.arch-viz-filter__heading:hover, .arch-viz-filter__btn:hover)
+  .arch-viz-filter__heading:not(:hover),
+.arch-viz-filter__pill:has(.arch-viz-filter__heading:hover, .arch-viz-filter__btn:hover)
+  .arch-viz-filter__btn:not(:hover) {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.arch-viz-filter__btn:focus-visible {
+  outline: none;
+}
+
+/* Legacy classes from earlier iterations — keep hidden if any leftover
+   element still references them. */
+.arch-viz-filter__sep,
+.arch-viz-filter__divider,
+.arch-viz-filter__chip,
+.arch-viz-filter__track,
+.arch-viz-filter__group,
+.arch-viz-filter__label {
+  all: unset;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .arch-viz-hero {
+    padding: clamp(100px, 15vh, 160px) 0 60px;
+  }
+}
+
+@media (max-width: 768px) {
+  .arch-viz-hero {
+    padding: 100px 0 40px;
+  }
+  .arch-viz-hero__copy-cell {
+    margin-top: 24px;
+    align-self: start;
+  }
+  .arch-viz-filter {
+    bottom: 20px;
+  }
+  .arch-viz-filter__pill {
+    /* Allow horizontal scroll on small screens so all filters remain reachable
+       without breaking the floating-island look */
+    max-width: calc(100vw - 24px);
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    column-gap: 28px;
+    padding: 0 20px;
+  }
+  .arch-viz-filter__pill::-webkit-scrollbar { display: none; }
+  .arch-viz-filter__btn {
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .arch-viz-page {
+    padding-bottom: 120px;
+  }
+  /* Tighten carousel side gutters on small screens so the image keeps
+     a workable width — buttons stay reachable in a 40px gutter. The
+     thumbs strip mirrors the same gutter so it stays aligned with the
+     image edges. */
+  .arch-viz-carousel__stage,
+  .arch-viz-thumbs,
+  .arch-viz-modal__header {
+    padding: 0 44px;
+  }
+  .arch-viz-carousel__btn,
+  .arch-viz-modal__close {
+    width: 36px;
+    height: 36px;
+  }
+  .arch-viz-modal__close {
+    font-size: 20px;
+  }
+}

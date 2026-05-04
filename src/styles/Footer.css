@@ -6,67 +6,105 @@
    ═══════════════════════════════════════════════════════ */
 
 .footer {
+  /* Stacking-context-free: lets .footer_back use its own z-index in the root
+     stacking context so it can paint over .section-experience (z:3) and the
+     fixed .section--hero. */
   position: relative;
-  z-index: 1;
   width: 100%;
-  background-color: #ffffff;
-  overflow-x: clip;
 }
 
-/* ── Hero — sticky so the overlay scrolls over it ── */
-.footer__hero {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  height: 1100px;
+/* ── Footer back — fixed at the viewport bottom at all times.
+   Page sections (z-index: 1) cover it during scroll;
+   .section-experience (z-index: 3) overlays it via its white panel,
+   and the 400px transparent tail at the end reveals it as that panel
+   scrolls up. */
+.footer_back {
+  /* Fixed at the viewport bottom, behind every page section and
+     .section-experience (z:3). As the user scrolls, .section-experience
+     slides up and uncovers this footer waiting underneath. */
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  width: 100%;
+  /* The glass FILL has been moved to the .footer_back__glass child layer
+     so it can render *over* the animated blob pseudos. The element itself
+     stays transparent — only its backdrop-filter blur of the page behind
+     it is applied here. */
+  background: transparent;
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  backdrop-filter: blur(24px) saturate(160%);
+  border-top: 1px solid hsla(0, 0%, 100%, 0.18);
+  box-shadow:
+    inset 0 1px 0 hsla(0, 0%, 100%, 0.25),
+    0 -1px 24px hsla(0, 0%, 0%, 0.15);
+  padding: 50px 0;
+  min-height: 400px;
+  /* Clip the gradient blobs (::before / ::after) to the panel's bounds. */
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* ── Gradient blob ── */
-.footer__blob {
+/* ── Glass fill layer — sits between the blobs and the footer content,
+   so the animated blob pseudos read as if they're behind the glass. ── */
+.footer_back__glass {
   position: absolute;
-  top: 200px;
-  right: -50px;
-  transform: scale(1.75) translateY(40%);
-  width: 600px;
-  height: 600px;
+  inset: 0;
+  background:
+    linear-gradient(
+      hsla(0, 0%, 100%, 0),
+      hsla(0, 0%, 100%, 0)
+    ),
+    hsla(0, 0%, 62%, 0.363);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Gradient blob — anchored to the right side of the footer.
+   Linear gradient sourced from the Figma "Blob Gradient" reference:
+     11% #8400FF, 38% #F9288C, 86% #F29578
+   with a heavy Gaussian blur to match the "Layer blur" effect.
+   Drifts continuously along both X and Y axes. ── */
+.footer_back::before {
+  content: "";
+  position: absolute;
+  /* Right side of the panel — orb's right edge bleeds ~120px past the
+     viewport edge so the brightest part of the gradient stays in view. */
+  top: 50%;
+  right: -120px;
+  width: 800px;
+  height: 800px;
+  margin-top: -400px;
   border-radius: 50%;
   background: linear-gradient(
     135deg,
-    #B400FF 11%,
+    #8400FF 11%,
     #F9288C 38%,
     #F29578 86%
   );
   filter: blur(100px);
+  opacity: 1;
   pointer-events: none;
+  z-index: -2;
+  will-change: transform;
+  animation: footerBlobDrift 9s ease-in-out infinite;
 }
 
-/* ── Hero text ── */
-.footer__hero-text {
-  position: relative;
-  z-index: 1;
-  font-family: "Neue Montreal", "Inter", Arial, sans-serif;
-  font-size: 90px;
-  font-weight: 500;
-  color: rgba(99, 99, 99, 0.25);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  margin: 0;
-  mix-blend-mode: luminosity;
-  top: -250px;
+/* Hide the second pseudo — the single Figma blob is enough on its own. */
+.footer_back::after {
+  content: none;
 }
 
-/* ── Content overlay — scrolls up over the sticky hero ── */
-.footer__overlay {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  background: #c4c4c465;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  padding: 50px 0;
-  margin-top: 200px;
-  min-height: 400px;
+/* X/Y drift — moves up, down, left, and right by ~60px through five
+   distinct keyframes so the orb travels a clear path on both axes. */
+@keyframes footerBlobDrift {
+  0%   { transform: translate(0, 0); }
+  20%  { transform: translate(-60px, -40px); }
+  40%  { transform: translate(40px, -70px); }
+  60%  { transform: translate(70px, 30px); }
+  80%  { transform: translate(-30px, 60px); }
+  100% { transform: translate(0, 0); }
 }
 
 /* Grid-authored layout — row gap gives breathing room between the
@@ -105,7 +143,7 @@
   font-family: "Neue Montreal", "Inter", Arial, sans-serif;
   font-size: 0.65rem;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgb(255, 255, 255);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 10px;
@@ -116,7 +154,7 @@
   font-family: "Neue Montreal", "Inter", Arial, sans-serif;
   font-size: 0.75rem;
   font-weight: 400;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(255, 255, 255, 0.6);
   line-height: 1.6;
 }
 
@@ -140,7 +178,7 @@
 .footer__input {
   font-family: "Neue Montreal", "Inter", Arial, sans-serif;
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgb(255, 255, 255);
   background: transparent;
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.25);
@@ -199,38 +237,14 @@
 
 /* ═══ Responsive ═══ */
 @media (max-width: 1024px) {
-  .footer__blob {
-    width: 450px;
-    height: 450px;
-    right: -100px;
-  }
-
-  .footer__hero-text {
-    font-size: 60px;
-  }
-
-  .footer__overlay {
+  .footer_back {
     padding: 40px 0 30px;
     min-height: 420px;
   }
 }
 
 @media (max-width: 768px) {
-  .footer__hero {
-    height: 60vh;
-  }
-
-  .footer__blob {
-    width: 350px;
-    height: 350px;
-    right: -80px;
-  }
-
-  .footer__hero-text {
-    font-size: 44px;
-  }
-
-  .footer__overlay {
+  .footer_back {
     padding: 40px 0 30px;
     min-height: auto;
   }
@@ -249,16 +263,7 @@
 }
 
 @media (max-width: 480px) {
-  .footer__blob {
-    width: 280px;
-    height: 280px;
-  }
-
-  .footer__hero-text {
-    font-size: 36px;
-  }
-
-  .footer__overlay {
+  .footer_back {
     padding: 30px 0 24px;
   }
 

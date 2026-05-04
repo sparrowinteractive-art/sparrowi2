@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { flushSync } from "react-dom";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
+import BetterExperience from "../BetterExperience";
 import "../../styles/AboutPage.css";
 
 const teamMembers = [
@@ -591,8 +592,8 @@ export default function AboutPage() {
         <h2 className="banner-text">AMAZE . DELIGHT . REPEAT</h2>
       </section>
 
-      <Footer
-        heroText={
+      <BetterExperience
+        text={
           <>
             People First.<br />
             Stories Always.<br />
@@ -600,6 +601,7 @@ export default function AboutPage() {
           </>
         }
       />
+      <Footer />
     </div>
   );
 }

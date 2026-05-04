@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import BetterExperience from "@components/BetterExperience";
 import { Grid, GridItem } from "@components/Grid";
 import "@styles/CareersPage.css";
 
@@ -135,8 +136,8 @@ export default function CareersPage() {
         </Grid>
       </section>
 
-      <Footer
-        heroText={
+      <BetterExperience
+        text={
           <>
             Stories worth Telling.<br />
             People worth Knowing.<br />
@@ -144,6 +145,7 @@ export default function CareersPage() {
           </>
         }
       />
+      <Footer />
     </div>
   );
 }

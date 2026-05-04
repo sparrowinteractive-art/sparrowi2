@@ -73,7 +73,8 @@
   position: relative;
   height: 100vh;
   height: 100dvh;
-  z-index: 0;
+  z-index: 1;
+  background-color: #ffffff;
   padding: 0 var(--grid-margin);
   display: flex;
   align-items: flex-start;
@@ -134,6 +135,7 @@
  */
 .about-journey {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #c4c4c4;
@@ -310,6 +312,7 @@
  */
 .about-honour {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #ffffff;
@@ -350,6 +353,7 @@
  */
 .about-team {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #ffffff;
@@ -413,6 +417,7 @@
  */
 .about-why {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #c4c4c4;
@@ -534,6 +539,7 @@
  */
 .about-approach {
   position: relative;
+  z-index: 1;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: #ffffff;
@@ -631,6 +637,7 @@
  */
 .about-beliefs {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #ffffff;
@@ -697,6 +704,7 @@
  */
 .about-banner {
   position: relative;
+  z-index: 1;
   height: 100vh;
   height: 100dvh;
   background-color: #c4c4c4;

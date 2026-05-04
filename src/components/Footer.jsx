@@ -2,29 +2,14 @@ import React from "react";
 import { Grid, GridItem } from "./Grid";
 import "../styles/Footer.css";
 
-const DEFAULT_HERO_TEXT = (
-  <>
-    There&rsquo;s Always<br />
-    Room for a Better<br />
-    Experience.
-  </>
-);
-
-export default function Footer({ heroText = DEFAULT_HERO_TEXT }) {
+export default function Footer() {
   return (
     <footer className="footer" data-navbar-theme="dark">
-      {/* Hero — sticky, stays in place while overlay scrolls over it */}
-      <div className="footer__hero">
-        <div className="footer__blob"></div>
-        <Grid>
-          <GridItem span={{ base: 4, md: 8, lg: 10 }}>
-            <h2 className="footer__hero-text">{heroText}</h2>
-          </GridItem>
-        </Grid>
-      </div>
-
-      {/* Content overlay — scrolls up over the sticky hero */}
-      <div className="footer__overlay">
+      {/* Fixed bottom panel — nav, contact, social, newsletter, copyright */}
+      <div className="footer_back">
+        {/* Glass-fill layer — sits ABOVE the animated blob pseudos so the
+            blobs read as if they're rendered behind the glass. */}
+        <div className="footer_back__glass" aria-hidden="true"></div>
         <Grid className="footer__layout">
           <GridItem span={{ base: 4, md: 8, lg: 5 }} className="footer__nav-cell">
             <nav className="footer__nav">

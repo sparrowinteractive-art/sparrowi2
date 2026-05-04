@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import BetterExperience from "@components/BetterExperience";
 import { Grid, GridItem } from "@components/Grid";
 import "@styles/ImmersivePage.css";
 
@@ -42,15 +43,62 @@ const FRAMES = [
   },
 ];
 
+// Reusable intro hero content. Rendered twice — once per split half — so
+// the two halves can translate independently while displaying the same
+// underlying layout. The right-side clone is marked aria-hidden so
+// screen readers only see one copy.
+function IntroHero() {
+  return (
+    <div className="immersive-intro__inner">
+      <Grid>
+        <GridItem
+          span={{ base: 4, md: 8, lg: 8 }}
+          start={{ lg: 2 }}
+          className="immersive-intro__title-cell"
+        >
+          <h1 className="immersive-intro__title">
+            Immersive
+            <br />
+            Experiences
+          </h1>
+        </GridItem>
+        <GridItem
+          span={{ base: 4, md: 5, lg: 4 }}
+          start={{ md: 4, lg: 8 }}
+          className="immersive-intro__copy-cell"
+        >
+          <p className="immersive-intro__lede">
+            Immersive theatres and 360° spaces.
+            <br />
+            <span className="immersive-intro__accent">
+              Total sensory immersion.
+            </span>
+          </p>
+          <ul className="immersive-intro__list">
+            <li>Curved Screen Theatres</li>
+            <li>Curved Screen with Floor Projection</li>
+            <li>Three-sided Screen Theatres</li>
+            <li>360 Immersive Theatres</li>
+            <li>Projection Mapping</li>
+          </ul>
+        </GridItem>
+      </Grid>
+    </div>
+  );
+}
+
 export default function ImmersivePage() {
-  // ── Pinned curved-frame stack (exoape.com/work style) ──
-  // The container below is N viewports tall. While the user scrolls
-  // through it, the inner sticky child stays locked at top:0 (the curved
-  // frame itself never moves). Scroll progress 0→(N−1) maps to which
-  // media+text pair is visible — they crossfade as the user scrolls.
+  // ── Unified pinned stack (intro split + curved-frame crossfade) ──
+  // The pin wrapper is (FRAMES.length + 1) viewports tall: one viewport
+  // of scroll for the intro center-split reveal (phase 0), then one
+  // viewport per curved frame (phases 1..N). The first curved video
+  // plays behind the glass intro from the start, so when the intro
+  // halves slide apart the next section is already visible behind them.
+  const TOTAL_PHASES = FRAMES.length + 1;
   const pinRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [activeProgress, setActiveProgress] = useState(0); // 0..1 within current step
+  const [activeProgress, setActiveProgress] = useState(0);
+  const [introProgress, setIntroProgress] = useState(0); // 0..1 across phase 0
 
   useEffect(() => {
     const pin = pinRef.current;
@@ -65,22 +113,34 @@ export default function ImmersivePage() {
         const rect = pin.getBoundingClientRect();
         const totalScroll = pin.offsetHeight - window.innerHeight;
         if (totalScroll <= 0) return;
-        // 0 when user just entered the section, 1 at the bottom
         const raw = -rect.top / totalScroll;
         const clamped = Math.min(Math.max(raw, 0), 0.9999);
-        const stepCount = FRAMES.length; // each frame consumes 1/N of the range
-        const stepSize = 1 / stepCount;
-        const idx = Math.min(Math.floor(clamped / stepSize), stepCount - 1);
-        const within = (clamped - idx * stepSize) / stepSize; // 0..1 inside step
-        setActiveIndex(idx);
-        setActiveProgress(within);
+
+        const phaseSize = 1 / TOTAL_PHASES;
+        if (clamped < phaseSize) {
+          // Phase 0 — intro split. Frame 0 stays fully visible behind.
+          setIntroProgress(clamped / phaseSize);
+          setActiveIndex(0);
+          setActiveProgress(0);
+        } else {
+          setIntroProgress(1);
+          const curvedRange = (clamped - phaseSize) / (1 - phaseSize); // 0..1
+          const stepSize = 1 / FRAMES.length;
+          const idx = Math.min(
+            Math.floor(curvedRange / stepSize),
+            FRAMES.length - 1
+          );
+          const within = (curvedRange - idx * stepSize) / stepSize;
+          setActiveIndex(idx);
+          setActiveProgress(within);
+        }
       });
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [TOTAL_PHASES]);
 
   // Crossfade window — last 40% of each step is reserved for the fade
   // into the next one. The eased curve smooths the start/end of the
@@ -126,57 +186,24 @@ export default function ImmersivePage() {
     return 0;
   };
 
+  // Intro split — eased translation so the halves accelerate softly out
+  // rather than tracking scroll 1:1.
+  const splitT = easeInOutCubic(introProgress);
+  const introHidden = introProgress >= 0.999;
+
   return (
     <div className="immersive-page">
       <Navbar logoVisible={true} />
 
-      {/* Frame 1: Intro hero — full viewport */}
-      <section className="immersive-frame immersive-frame--intro">
-        <div className="immersive-intro__inner">
-          <Grid>
-            <GridItem
-              span={{ base: 4, md: 8, lg: 8 }}
-              start={{ lg: 2 }}
-              className="immersive-intro__title-cell"
-            >
-              <h1 className="immersive-intro__title">
-                Immersive
-                <br />
-                Experiences
-              </h1>
-            </GridItem>
-            <GridItem
-              span={{ base: 4, md: 5, lg: 4 }}
-              start={{ md: 4, lg: 8 }}
-              className="immersive-intro__copy-cell"
-            >
-              <p className="immersive-intro__lede">
-                Immersive theatres and 360° spaces.
-                <br />
-                <span className="immersive-intro__accent">
-                  Total sensory immersion.
-                </span>
-              </p>
-              <ul className="immersive-intro__list">
-                <li>Interactive Touch Tables and Walls</li>
-                <li>E-Book and Gesture-based Interfaces</li>
-                <li>VR &amp; AR Experiences</li>
-                <li>Multi-platform Digital Twin Implementation</li>
-                <li>Interactive Metaverse Applications</li>
-              </ul>
-            </GridItem>
-          </Grid>
-        </div>
-      </section>
-
-      {/* Pinned curved-screen stack — sticky frame, content crossfades on scroll */}
+      {/* Unified pinned stack — intro overlay sits on top of the curved
+          frame crossfade and splits apart on scroll. */}
       <div
         ref={pinRef}
         className="immersive-pin"
-        style={{ height: `${FRAMES.length * 100}vh` }}
+        style={{ height: `${TOTAL_PHASES * 100}vh` }}
       >
         <div className="immersive-pin__sticky immersive-frame immersive-frame--curved">
-          {/* Stacked video layers — one per frame, opacity driven by scroll */}
+          {/* Stacked video layers — one per curved frame. */}
           <div className="immersive-pin__media">
             {FRAMES.map((f, i) => (
               <div
@@ -200,9 +227,13 @@ export default function ImmersivePage() {
             ))}
           </div>
 
-          {/* Vertical progress bar on right edge — fills as the user scrolls
-              through all curved-screen frames */}
-          <div className="immersive-pin__progress" aria-hidden="true">
+          {/* Vertical progress bar — only meaningful once we're in the
+              curved-frame phase, so it fades in as the intro splits out. */}
+          <div
+            className="immersive-pin__progress"
+            aria-hidden="true"
+            style={{ opacity: introProgress }}
+          >
             <div
               className="immersive-pin__progress-fill"
               style={{
@@ -213,8 +244,12 @@ export default function ImmersivePage() {
             />
           </div>
 
-          {/* Stacked text layers — same crossfade pattern */}
-          <div className="immersive-pin__text">
+          {/* Stacked text layers for curved frames — hidden behind the
+              intro overlay until the split completes. */}
+          <div
+            className="immersive-pin__text"
+            style={{ opacity: introProgress }}
+          >
             {FRAMES.map((f, i) => (
               <div
                 key={`t-${f.title}`}
@@ -234,11 +269,38 @@ export default function ImmersivePage() {
               </div>
             ))}
           </div>
+
+          {/* Phase-0 intro overlay — two glass-filled halves clipped to
+              the left/right of the viewport. They render the same hero
+              content and slide outward on scroll, revealing the curved
+              video already playing behind them. */}
+          <div
+            className="immersive-intro-overlay"
+            style={{
+              visibility: introHidden ? "hidden" : "visible",
+              pointerEvents: introHidden ? "none" : "auto",
+            }}
+            aria-hidden={introHidden}
+          >
+            <div
+              className="immersive-intro__half immersive-intro__half--left"
+              style={{ transform: `translateX(${-splitT * 100}%)` }}
+            >
+              <IntroHero />
+            </div>
+            <div
+              className="immersive-intro__half immersive-intro__half--right"
+              style={{ transform: `translateX(${splitT * 100}%)` }}
+              aria-hidden="true"
+            >
+              <IntroHero />
+            </div>
+          </div>
         </div>
       </div>
 
-      <Footer
-        heroText={
+      <BetterExperience
+        text={
           <>
             Stories that Surround.<br />
             Spaces that Move.<br />
@@ -246,6 +308,7 @@ export default function ImmersivePage() {
           </>
         }
       />
+      <Footer />
     </div>
   );
 }

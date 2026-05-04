@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import BetterExperience from "@components/BetterExperience";
 import { Grid, GridItem } from "@components/Grid";
 import { getNextCaseStudy } from "@/lib/caseStudies";
 import "@styles/CaseStudyPage.css";
@@ -519,8 +520,8 @@ export default function CaseStudyPage({ study }) {
       {/* ── Next project ────────────────────────────────── */}
       {next && <NextProject next={next} />}
 
-      <Footer
-        heroText={
+      <BetterExperience
+        text={
           <>
             See another<br />
             Story we&rsquo;ve<br />
@@ -528,6 +529,7 @@ export default function CaseStudyPage({ study }) {
           </>
         }
       />
+      <Footer />
     </div>
   );
 }

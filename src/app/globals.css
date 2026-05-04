@@ -93,6 +93,10 @@
 
 html {
   height: 100%;
+  /* Page background lives on html so it paints on the root canvas, leaving
+     room for fixed elements with z-index: -1 (e.g. .footer_back) to render
+     above the canvas but behind page content. */
+  background: #ffffff;
   /* Lenis manages smooth scroll in JS — native CSS smooth-scroll fights it */
   scrollbar-width: none;          /* Firefox */
   -ms-overflow-style: none;       /* IE / Edge */
@@ -116,7 +120,9 @@ body {
   min-height: 100%;
   font-family: "Neue Montreal", "Inter", Arial, Helvetica, sans-serif;
   color: #1a1a1a;
-  background: #ffffff;
+  /* Body itself stays transparent; the white background is on html so it
+     paints behind .footer_back (z-index: -1) without covering it. */
+  background: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

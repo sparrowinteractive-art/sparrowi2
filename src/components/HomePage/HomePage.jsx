@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import BetterExperience from "@components/BetterExperience";
 import { Grid, GridItem } from "@components/Grid";
 import "@styles/HomePage.css";
 
@@ -198,6 +199,55 @@ export default function HomePage() {
       (prev) => (prev + delta + TESTIMONIALS.length) % TESTIMONIALS.length
     );
   };
+
+  // Hero release — the hero starts position:fixed at the top, but once
+  // .partner-wrapper has scrolled up far enough to fully cover the hero
+  // (its top edge crosses the viewport top), we switch the hero to
+  // position:absolute pinned at document y = 100vh. From that point on the
+  // hero sits in the page flow and scrolls naturally instead of staying
+  // permanently fixed at the top.
+  useEffect(() => {
+    const hero = document.querySelector(".section--hero");
+    if (!hero) return;
+
+    let ticking = false;
+    let released = false;
+    const update = () => {
+      const partner = document.querySelector(".partner-wrapper");
+      if (!partner) {
+        ticking = false;
+        return;
+      }
+      const partnerTop = partner.getBoundingClientRect().top;
+      // Once partner-wrapper's top edge reaches (or passes) the viewport
+      // top, the overlay transition is complete — release the hero.
+      const shouldRelease = partnerTop <= 0;
+      if (shouldRelease && !released) {
+        hero.style.position = "absolute";
+        hero.style.top = `${window.innerHeight}px`;
+        released = true;
+      } else if (!shouldRelease && released) {
+        hero.style.position = "";
+        hero.style.top = "";
+        released = false;
+      }
+      ticking = false;
+    };
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    onScroll();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, []);
 
   // Hero text parallax — container drifts up as user scrolls down (entrance is CSS)
   useEffect(() => {
@@ -1117,17 +1167,13 @@ export default function HomePage() {
           </GridItem>
         </Grid>
 
-        <Grid className="testimonials__center">
-          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
-            <h2 className="testimonials__heading">Out Loud</h2>
-          </GridItem>
-          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
-            <h3 className="testimonials__quote-heading">They felt it.<br></br>They said it.</h3>
-          </GridItem>
-        </Grid>
+        <h2 className="testimonials__heading">Out Loud</h2>
+        <h3 className="testimonials__quote-heading">
+          They felt it.<br />They said it.
+        </h3>
 
         <Grid className="testimonials__bottom">
-          <GridItem span={{ base: 4, md: 4, lg: 6 }}>
+          <GridItem span={{ base: 4, md: 2, lg: 2 }} className="testimonials__arrows-cell">
             <div className="testimonials__arrows">
               <button
                 className="testimonials__arrow testimonials__arrow--left"
@@ -1149,7 +1195,12 @@ export default function HomePage() {
               </button>
             </div>
           </GridItem>
-          <GridItem span={{ base: 4, md: 4, lg: 6 }} className="testimonials__right">
+
+          <GridItem
+            span={{ base: 4, md: 6, lg: 8 }}
+            start={{ md: 4, lg: 3 }}
+            className="testimonials__quote-cell"
+          >
             {/* Keyed on index so React replaces the node, restarting the CSS
                 slide-in animation. data-dir picks which direction to slide from. */}
             <div
@@ -1161,7 +1212,11 @@ export default function HomePage() {
                 {"\u201C"}{TESTIMONIALS[testimonialIndex].quote}{"\u201D"}
               </p>
               <div className="testimonials__author">
-                <div className="testimonials__avatar"></div>
+                <div className="testimonials__avatars" aria-hidden="true">
+                  <div className="testimonials__avatar testimonials__avatar--side"></div>
+                  <div className="testimonials__avatar testimonials__avatar--main"></div>
+                  <div className="testimonials__avatar testimonials__avatar--side"></div>
+                </div>
                 <div className="testimonials__author-info">
                   <span className="testimonials__author-name">
                     {TESTIMONIALS[testimonialIndex].name}
@@ -1229,7 +1284,10 @@ export default function HomePage() {
         </Grid>
       </section>
 
-      {/* ═══ Section 13: Footer ═══ */}
+      {/* ═══ Section 13: Better Experience CTA ═══ */}
+      <BetterExperience />
+
+      {/* ═══ Section 14: Footer ═══ */}
       <Footer />
 
     </div>

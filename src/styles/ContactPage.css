@@ -20,11 +20,13 @@
    actual content width to 1440px and centers it. */
 .contact-section {
   position: relative;
+  z-index: 1;
   width: 100%;
   min-height: var(--contact-section-h);
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #ffffff;
 }
 
 .contact-section__inner {

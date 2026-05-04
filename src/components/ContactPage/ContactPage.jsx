@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Navbar from "@components/Navbar";
 import Footer from "@components/Footer";
+import BetterExperience from "@components/BetterExperience";
 import "@styles/ContactPage.css";
 
 // Pin coordinates expressed as percentages of the world-map SVG's
@@ -182,6 +183,7 @@ export default function ContactPage() {
         </div>
       </section>
 
+      <BetterExperience />
       <Footer />
     </div>
   );
