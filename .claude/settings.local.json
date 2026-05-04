@@ -9,7 +9,13 @@
       "Bash(taskkill //PID 8840 //F)",
       "Bash(npm install:*)",
       "Bash(taskkill //PID 15468 //F)",
-      "Bash(rm -rf .next)"
+      "Bash(rm -rf .next)",
+      "Bash(git fetch *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
     ]
   }
 }
