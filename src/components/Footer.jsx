@@ -44,8 +44,8 @@ export default function Footer() {
               <GridItem span={{ base: 4, md: 4, lg: 6 }}>
                 <div className="footer__social">
                   <h4 className="footer__info-heading">OUR VOICE</h4>
-                  <a href="#" className="footer__social-link">Instagram{"\u00A0\u00A0"}&nearr;</a>
-                  <a href="#" className="footer__social-link">LinkedIn{"\u00A0\u00A0"}&nearr;</a>
+                  <a href="#" className="footer__social-link">Instagram</a>
+                  <a href="#" className="footer__social-link">LinkedIn</a>
                 </div>
               </GridItem>
             </Grid>
