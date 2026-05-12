@@ -15,7 +15,9 @@
       "Bash(git checkout *)",
       "Bash(git pull *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:8004/)",
+      "Bash(taskkill //PID 6384 //F)"
     ]
   }
 }

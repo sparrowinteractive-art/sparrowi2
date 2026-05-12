@@ -32,8 +32,12 @@ export default function Footer() {
               <GridItem span={{ base: 4, md: 4, lg: 6 }}>
                 <div className="footer__contact">
                   <h4 className="footer__info-heading">CONTACT</h4>
-                  <p>PT +351 916 740 305</p>
-                  <p>ES +34 611 851 141</p>
+                  <p>
+                    7th Floor, Plot No 19A, Filmcity
+                    <br />
+                    Sector 16 A, Noida - 201301, India
+                  </p>
+                  <p>+91-9810119956</p>
                   <p>Around the world.</p>
                 </div>
               </GridItem>
